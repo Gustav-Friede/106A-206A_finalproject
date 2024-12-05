@@ -20,8 +20,6 @@ for corner in corners:
 
 plt.figure(figsize=(12, 12))
 
-
-
 # original image
 plt.subplot(2, 2, 1)
 plt.imshow(cv.imread(filepath + 'calibrated.jpg'), cmap='gray')
@@ -45,8 +43,6 @@ plt.subplot(2, 2, 4)
 plt.imshow(img_wc, cmap='gray')
 plt.title('Corners')
 plt.xticks([]), plt.yticks([])
-
-
 
 plt.tight_layout()
 plt.show()
