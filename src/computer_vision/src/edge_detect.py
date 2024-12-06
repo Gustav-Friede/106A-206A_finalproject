@@ -1,26 +1,24 @@
-
+import os
 import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
 
-filepath = '../imgs/'
+# read image
+script_dir = os.path.dirname(os.path.abspath(__file__))
+img_path = os.path.join(script_dir, '..', '..', '..','imgs', 'birds-view-maze.jpg')
+img = cv.imread(img_path, cv.IMREAD_REDUCED_GRAYSCALE_8)
 
-# initialize image
-img = cv.imread(filepath + 'calibrated.jpg', cv.IMREAD_REDUCED_GRAYSCALE_8)
-
-
+# extract edges and remove background
 edges = cv.Canny(img, 64, 264)
-corners = cv.goodFeaturesToTrack(edges, 32,0.08, 50)
-print(corners)
-corners = np.int0(corners)
-
-img_wc = edges.copy()
+img_wc = edges.copy() # for visual purpose
 krn = cv.getStructuringElement(cv.MORPH_RECT, (16, 16))
-dlt = cv.dilate(img_wc, krn, iterations=5)
+dlt = cv.dilate(edges, krn, iterations=5)
 res = 255 - cv.bitwise_and(dlt, img_wc)
 
-
+# pinpoint corners of the maze
+corners = cv.goodFeaturesToTrack(edges, 32,0.08, 50)
+corners = np.int0(corners)
 for corner in corners:
     x, y = corner.ravel()
     cv.circle(res, (int(x), int(y)), 5, 0, -1)
@@ -67,13 +65,13 @@ plt.show()
 # plt.figure(figsize=(12, 12))
 # #original image
 # plt.subplot(2, 2, 1)
-# plt.imshow(cv.imread(filepath + 'calibrated.jpg'), cmap='gray')
+# plt.imshow(cv.imread(filepath + 'birds-view-maze.jpg'), cmap='gray')
 # plt.title('Original Image')
 # plt.xticks([]), plt.yticks([])
 #
 # #grayscale image
 # plt.subplot(2, 2, 2)
-# plt.imshow(cv.imread(filepath + 'calibrated.jpg', cv.IMREAD_REDUCED_GRAYSCALE_8), cmap='gray')
+# plt.imshow(cv.imread(filepath + 'birds-view-maze.jpg', cv.IMREAD_REDUCED_GRAYSCALE_8), cmap='gray')
 # plt.title('Grayscale')
 # plt.xticks([]), plt.yticks([])
 #

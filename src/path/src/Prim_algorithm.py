@@ -49,7 +49,7 @@ def prim_np(w, n1, n2):
 
 
 def build_arrays(V, G):
-    """Build arrays for np array prim from graph:
+    """Build arrays for np array experimental from graph:
     Input:
         V: Number of nodes
         G: edges [h,t,w]: head - tail, weight
