@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import cv2 as cv
+import numpy as np
 
 # file path that leads to directory of -- final_project/imgs/ --
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -42,7 +43,61 @@ def create_and_save_new_board():
     #cv.waitKey(2000)
     cv.imwrite(SAVE_NAME, img)
 
-# uncomment if you want to create a new board
-#create_and_save_new_board()
+
+def calibrate_parameters():
+    dictionary = cv.aruco.getPredefinedDictionary(ARUCO_DICT)
+    board = cv.aruco.CharucoBoard_create(SQUARES_HORIZONTALLY, SQUARES_VERTICALLY, SQUARE_LENGTH, MARKER_LENGTH, dictionary)
+
+    detector_params = cv.aruco.DetectorParameters_create()
+
+    # load images
+    img_files = [os.path.join(img_path, f) for f in os.listdir(img_path) if f.endswith('.png')]
+    img_files.sort()
+
+    all_corners = []
+    all_ids = []
+
+    for img_file in img_files:
+        img = cv.imread(img_file)
+        img_copy = img.copy()
+        marker_corners, marker_ids, _ = cv.aruco.detectMarkers(img, dictionary, parameters=detector_params)
+
+        if marker_ids is not None and len(marker_ids) > 0:
+            cv.aruco.drawDetectedMarkers(img_copy, marker_corners, marker_ids)
+            retval, charuco_corners, charuco_ids = cv.aruco.interpolateCornersCharuco(marker_corners, marker_ids, img, board)
+
+            if retval > 0:
+                all_corners.append(charuco_corners)
+                all_ids.append(charuco_ids)
+
+    # calibrate camera
+    height, width = img.shape[:2]
+    retval, camera_matrix, dist_coeffs, rvecs, tvecs = cv.aruco.calibrateCameraCharuco(
+        all_corners,
+        all_ids,
+        board,
+        (width, height),
+        None,
+        None
+    )
+
+    np.save('cameraMatrix.npy', camera_matrix)
+    np.save('distCoeffs.npy', dist_coeffs)
+
+    # show results
+    for img_file in img_files:
+        img = cv.imread(img_file)
+        undistorted_image = cv.undistort(img, camera_matrix, dist_coeffs)
+        cv.imshow('Undistorted Image', undistorted_image)
+        cv.waitKey(0)
+
+    cv.destroyAllWindows()
+
+#calibrate_parameters()
+
+
+
+
+
 
 
