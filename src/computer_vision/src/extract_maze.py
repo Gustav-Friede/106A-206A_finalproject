@@ -1,8 +1,8 @@
 import os
+
 import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
-from PIL import Image
 
 # read image
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -48,45 +48,3 @@ plt.title('Edge and Corners')
 
 plt.tight_layout()
 plt.show()
-
-
-
-
-
-# plt.subplot(1, 2, 2)  # 1 row, 2 columns, 2nd subplot
-# plt.imshow(edges, cmap='gray')
-# plt.title('Canny Edge Detection')
-# plt.xticks([]), plt.yticks([])
-#
-#
-
-
-
-# plt.figure(figsize=(12, 12))
-# #original image
-# plt.subplot(2, 2, 1)
-# plt.imshow(cv.imread(filepath + 'birds-view-maze.jpg'), cmap='gray')
-# plt.title('Original Image')
-# plt.xticks([]), plt.yticks([])
-#
-# #grayscale image
-# plt.subplot(2, 2, 2)
-# plt.imshow(cv.imread(filepath + 'birds-view-maze.jpg', cv.IMREAD_REDUCED_GRAYSCALE_8), cmap='gray')
-# plt.title('Grayscale')
-# plt.xticks([]), plt.yticks([])
-#
-# #canny edge detection
-# plt.subplot(2, 2, 3)
-# plt.imshow(edges, cmap='gray')
-# plt.title('Edges')
-# plt.xticks([]), plt.yticks([])
-#
-# # harris corner detection
-# plt.subplot(2, 2, 4)
-# plt.imshow(img_wc, cmap='gray')
-# plt.title('Corners')
-# plt.xticks([]), plt.yticks([])
-# #
-# plt.tight_layout()
-# plt.show()
-
