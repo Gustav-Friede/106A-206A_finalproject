@@ -3,3 +3,5 @@ devel/
 install/
 logs/
 *.log
+imgs/cameraMatrix.npy
+imgs/distCoeffs.npy
