@@ -139,6 +139,8 @@ class TrajectoryPlanner:
         a_star.plot(map_msg,np.array([int(end_pose.pose.position.x),int(end_pose.pose.position.y)]),np.array([int(goal_pose.pose.position.x),int(goal_pose.pose.position.y)]))
         way_points = a_star.a_star(map_msg,np.array([int(end_pose.pose.position.x),int(end_pose.pose.position.y)]),np.array([int(goal_pose.pose.position.x),int(goal_pose.pose.position.y)]))
         #print(way_points)
+        if way_points is None:
+    	    return path
 
         for i in range(len(way_points)):
             point = PoseStamped()
