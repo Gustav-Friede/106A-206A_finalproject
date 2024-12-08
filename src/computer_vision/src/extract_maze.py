@@ -4,13 +4,16 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 
+MIN_THRESH_VALUE = 120
+MAX_THRESH_VALUE = 255
+
 # read image
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..','imgs', 'birds-view-maze.jpg')
+img_path = os.path.join(script_dir, '..', '..', '..','camera_calibration', 'camera_snapshots', 'snapshot_000.png')
 img = cv.imread(img_path, cv.IMREAD_REDUCED_GRAYSCALE_8)
 
 # extract edges and remove background
-edges = cv.Canny(img, 64, 264)
+edges = cv.Canny(img, MIN_THRESH_VALUE, MAX_THRESH_VALUE)
 img_wc = edges.copy() # for visual purpose
 krn = cv.getStructuringElement(cv.MORPH_RECT, (16, 16))
 dlt = cv.dilate(edges, krn, iterations=5)
@@ -32,15 +35,15 @@ print(image)
 # cv.destroyAllWindows()
 
 # Display original and edge-detected images
-plt.figure(figsize=(10, 5))  # Adjust figure size for better visualization
+plt.figure(figsize=(10, 5))
 #
-#Subplot 1: Original Image
+# original Image
 plt.subplot(1, 2, 1)  # 1 row, 2 columns, 1st subplot
 plt.imshow(img, cmap='gray')
 plt.title('Original Image')
 #plt.xticks([]), plt.yticks([])
 
-# Subplot 2: Edge Image
+# edge Image
 plt.subplot(1, 2, 2)  # 1 row, 2 columns, 2nd subplot
 plt.imshow(res, cmap='gray')
 plt.title('Edge and Corners')

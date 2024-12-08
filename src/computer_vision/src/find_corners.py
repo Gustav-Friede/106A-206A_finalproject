@@ -4,19 +4,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-THRESH_VALUE = 120
-MORPH_KERNEL_SIZE = (5, 50)
+MORPH_KERNEL_SIZE = (2, 2)
 
 # initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'camera_snapshots', 'snapshot_000.png')
+#img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_000.png')
+img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
 img = cv.imread(img_path)
 if img is None:
     raise FileNotFoundError("Image not found at the specified path.")
 
 # threshold the image to create a binary mask
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-_, thresh = cv.threshold(gray, THRESH_VALUE, 255, cv.THRESH_BINARY)
+clahe = cv.createCLAHE(clipLimit=1.0, tileGridSize=(8, 8))
+gray = clahe.apply(gray)
+_, thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
 # fill small holes and consolidate the maze shape using morphological closing
 kernel = cv.getStructuringElement(cv.MORPH_RECT, MORPH_KERNEL_SIZE)

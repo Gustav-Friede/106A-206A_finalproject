@@ -8,46 +8,30 @@ from sensor_msgs.msg import Image
 
 class BirdsEyeViewNode:
     def __init__(self):
+        # Subscribe to rectified image
+        self.image_topic = rospy.get_param("~image_topic", "/head_camera/image_rect_color")
 
-        # initialize paths
-        self.image_topic = rospy.get_param("~image_topic", "/usb_cam/image_raw")
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        cam_matrix_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'cameraMatrix.npy')
-        dist_coeffs_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'distCoeffs.npy')
-
-        if not os.path.exists(cam_matrix_path) or not os.path.exists(dist_coeffs_path):
-            rospy.logerr("Camera calibration files not found. Run calibration first.")
-            raise FileNotFoundError("Missing cameraMatrix.npy or distCoeffs.npy")
-
-        self.camera_matrix = np.load(cam_matrix_path)
-        self.dist_coeffs = np.load(dist_coeffs_path)
-
-        rospy.loginfo("Loaded camera calibration parameters.")
-
-
-        # image_points should be the corners of the maze after undistortion.
+        # Example image_points and world_points
+        # Adjust these based on known correspondences in your scene
         self.image_points = np.array([[150, 35],
                                       [524, 32],
                                       [635, 344],
                                       [0, 331]], dtype=np.float32)
-    
 
-        # world coorindates output view size and coordinates
-        self.world_points = np.array([[0,   0],
-                                      [1.524, 0],
+        self.world_points = np.array([[0.0,   0.0],
+                                      [1.524, 0.0],
                                       [1.524, 1.524],
-                                      [0,   1.524]], dtype=np.float32)
+                                      [0.0,   1.524]], dtype=np.float32)
 
-        # compute the homography
+        # Compute homography
         self.H, _ = cv.findHomography(self.image_points, self.world_points)
         if self.H is None:
             rospy.logerr("Could not compute homography. Check your correspondences.")
             raise ValueError("Invalid image_points or world_points for homography.")
-
         rospy.loginfo("Homography matrix computed.")
 
-        # the size of the bird’s-eye view output
-        self.output_size = (680, 480)  # (width, height)
+        # Output size for the bird’s-eye view
+        self.output_size = (680, 480)  # width, height
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
@@ -56,16 +40,11 @@ class BirdsEyeViewNode:
         rospy.loginfo(f"BirdsEyeViewNode subscribed to: {self.image_topic}")
 
     def image_callback(self, msg):
-        # Convert ROS image to OpenCV
         cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
-        # undistort the image
-        undistorted = cv.undistort(cv_image, self.camera_matrix, self.dist_coeffs)
+        # Since image is already rectified by image_proc, no need for undistort
+        birds_eye = cv.warpPerspective(cv_image, self.H, self.output_size)
 
-        # warp to bird’s-eye view
-        birds_eye = cv.warpPerspective(undistorted, self.H, self.output_size)
-
-        # show the result
         cv.imshow("Bird's-Eye View", birds_eye)
         key = cv.waitKey(1) & 0xFF
         if key == ord('q'):

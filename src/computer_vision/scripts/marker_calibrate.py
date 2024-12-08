@@ -19,7 +19,8 @@ def calibrate_parameters(aruco_dict, squares_horizontally, squares_vertically, s
     for img_file in img_files:
         img = cv.imread(img_file)
         if img is None:
-            continue
+            continuec
+
 
         if height is None or width is None:
             height, width = img.shape[:2]
@@ -74,7 +75,7 @@ if __name__ == '__main__':
     # convert dict to a constant and save it to the imgs directory as camera_snapshots
     aruco_dict = getattr(cv.aruco, aruco_dict_name)
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    img_dir = os.path.join(script_dir, '..', '..', '..', 'imgs', 'camera_snapshots')
+    img_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots')
 
     camera_matrix, dist_coeffs = calibrate_parameters(
         aruco_dict,
@@ -87,10 +88,10 @@ if __name__ == '__main__':
 
     if camera_matrix is not None and dist_coeffs is not None:
         # save to imgs/ (one directory up from camera_snapshots)
-        imgs_dir = os.path.join(script_dir, '..', '..', '..', 'imgs')
+        imgs_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration')
         np.save(os.path.join(imgs_dir, 'cameraMatrix.npy'), camera_matrix)
         np.save(os.path.join(imgs_dir, 'distCoeffs.npy'), dist_coeffs)
         print("Camera calibration successful!")
-        print("Parameters saved to cameraMatrix.npy and distCoeffs.npy in imgs/")
+        print("Parameters saved to cameraMatrix.npy and distCoeffs.npy in camera_calibration/")
     else:
         print("Calibration failed. Not enough sufficient images with a visible ChArUco board were found, try again.")

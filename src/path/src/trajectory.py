@@ -8,7 +8,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import a_star_Gutsav_v4 as a_star
+import src.path.src.a_star_Gutsav_v4 as a_star
 import numpy as np
 
 

@@ -22,13 +22,13 @@ class PhotoSnapper:
         # set up save directory inside imgs/
         self.aruco_dict = getattr(cv.aruco, self.aruco_dict_name)
         script_dir = os.path.dirname(os.path.realpath(__file__))
-        self.save_dir = os.path.join(script_dir, '..', '..', '..', 'imgs', self.save_subdir)
+        self.save_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', self.save_subdir)
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
         # try to load camera calibration parameters (if they exist)
-        cam_matrix_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'cameraMatrix.npy')
-        dist_coeffs_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'distCoeffs.npy')
+        cam_matrix_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'cameraMatrix.npy')
+        dist_coeffs_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'distCoeffs.npy')
         self.camera_matrix = np.load(cam_matrix_path) if os.path.exists(cam_matrix_path) else None
         self.dist_coeffs = np.load(dist_coeffs_path) if os.path.exists(dist_coeffs_path) else None
         if self.camera_matrix is not None and self.dist_coeffs is not None:
