@@ -8,6 +8,8 @@ import numpy as np
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import a_star_Gutsav_v4 as a_star
+#print(a_star.__file__)
+#print(dir(a_star))
 
 
 class TrajectoryPlanner:
