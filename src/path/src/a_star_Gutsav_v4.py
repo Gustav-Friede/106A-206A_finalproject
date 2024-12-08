@@ -128,11 +128,11 @@ def add_buffer(grid, buffer, start, end):
                 for di in range(-buffer, buffer + 1):
                     for dj in range(-buffer, buffer + 1):
                         ni, nj = i + di, j + dj
-                        if 0 <= ni < rows and 0 <= nj < columns:    #check if the neighbor is in bounds and within the buffer distance
-                            if grid[ni][nj] != start and grid[nj][ni] != end and grid[nj][ni].type != 100:    #avoid overwriting start, end, or 100
-                                    grid[ni][nj].type = 51    #set psudo obstacle
+                        if ni >= 0 and nj >= 0 and nj < columns and ni < rows:    #check if the neighbor is in bounds and within the buffer distance
+                            if grid[nj][ni] != start and grid[nj][ni] != end and grid[nj][ni].type != 100:    #avoid overwriting start, end, or 100
+                                    grid[nj][ni].type = 51    #set psudo obstacle
                                     
-    return
+    return grid
 
 #########################################################
 
@@ -146,13 +146,13 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     examined_nodes = []    #list where nodes are added that which were examined
     came_from = {}    #dictionary where keys are node coordinates and values is previous node
 
-    start.start_dis = 0    #distance to start node
-    start.end_dis = dis_curr_end(start, end)    #distance to end node
+    #start.start_dis = 0    #distance to start node
+    #start.end_dis = dis_curr_end(start, end)    #distance to end node
 
     next_nodes.append(start)    #first node to examine
 
     buffer = 2    #size of buffer zone
-    add_buffer(grid, buffer, start, end)    #add buffer zone
+    grid = add_buffer(grid, buffer, start, end)    #add buffer zone
     
     while len(next_nodes) > 0:    #loop until all nodes are examined
 
@@ -195,6 +195,11 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
 def plot(occupancy_grid_msg, start, end):
 
     grid = process_occupancy_grid(occupancy_grid_msg)
+    start_node = grid[start[1]][start[0]]
+    end_node = grid[end[1]][end[0]]
+
+    buffer = 2    #size of buffer zone
+    grid = add_buffer(grid, buffer, start_node, end_node)    #add buffer zone
     
     plt.figure(dpi=300)
     plt.title('Occupancy Grid')
@@ -202,25 +207,31 @@ def plot(occupancy_grid_msg, start, end):
     columns1 = occupancy_grid_msg.info.width
     rows1 = occupancy_grid_msg.info.height
             
-    oc1_x, oc1_y, path1_x, path1_y, poc1_x, poc1_y = [[] for _ in range(4)]
+    oc1_x, oc1_y, path1_x, path1_y, poc1_x, poc1_y = [[] for _ in range(6)]
             
     for i in range(rows1):
         for j in range(columns1):
             if grid[j][i].type == 100:
                 oc1_x.append(grid[j][i].x)
                 oc1_y.append(grid[j][i].y)
+            elif grid[j][i].type == 51:
+                poc1_x.append(grid[j][i].x)
+                poc1_y.append(grid[j][i].y)
                 
     plt.plot(oc1_x, oc1_y, 's', color='black', markersize=1.7)
+    plt.plot(poc1_x, poc1_y, 's', color='grey', markersize=1.7)
+
     plt.axis('equal')
     
-    plt.show()
-
+    plt.show(block=True)
+    
     path1 = a_star(occupancy_grid_msg, start, end)
     
     if path1 is None:
     	return
     
     #plot grid
+
     plt.figure(dpi=300)
     plt.title('Occupancy Grid with Path')
         
@@ -241,3 +252,4 @@ def plot(occupancy_grid_msg, start, end):
     plt.axis('equal')
     
     plt.show()
+    
