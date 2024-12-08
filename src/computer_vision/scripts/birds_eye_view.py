@@ -26,16 +26,17 @@ class BirdsEyeViewNode:
 
 
         # image_points should be the corners of the maze after undistortion.
-        self.image_points = np.array([[100, 200],
-                                      [500, 200],
-                                      [500, 400],
-                                      [100, 400]], dtype=np.float32)
+        self.image_points = np.array([[150, 35],
+                                      [524, 32],
+                                      [635, 344],
+                                      [0, 331]], dtype=np.float32)
+    
 
         # world coorindates output view size and coordinates
         self.world_points = np.array([[0,   0],
-                                      [500, 0],
-                                      [500, 400],
-                                      [0,   400]], dtype=np.float32)
+                                      [1.524, 0],
+                                      [1.524, 1.524],
+                                      [0,   1.524]], dtype=np.float32)
 
         # compute the homography
         self.H, _ = cv.findHomography(self.image_points, self.world_points)
@@ -46,7 +47,7 @@ class BirdsEyeViewNode:
         rospy.loginfo("Homography matrix computed.")
 
         # the size of the bird’s-eye view output
-        self.output_size = (500, 400)  # (width, height)
+        self.output_size = (680, 480)  # (width, height)
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
