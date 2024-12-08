@@ -76,7 +76,6 @@ cv.drawContours(result_img, [maze_contour], -1, (0,255,0), 5)
 for (x, y) in ordered_corners:
     cv.circle(result_img, (int(x), int(y)), 15, (0,0,255), -1)
 
-
 # display results
 plt.figure(figsize=(10,5))
 
