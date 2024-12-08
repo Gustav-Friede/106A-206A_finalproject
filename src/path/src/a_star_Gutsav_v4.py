@@ -146,8 +146,8 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     examined_nodes = []    #list where nodes are added that which were examined
     came_from = {}    #dictionary where keys are node coordinates and values is previous node
 
-    #start.start_dis = 0    #distance to start node
-    #start.end_dis = dis_curr_end(start, end)    #distance to end node
+    start.start_dis = 0    #distance to start node
+    start.end_dis = dis_curr_end(start, end)    #distance to end node
 
     next_nodes.append(start)    #first node to examine
 
