@@ -160,10 +160,10 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
- catkin_install_python(PROGRAMS
-   src/a_star_Gutsav_v4.py
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
- )
+# catkin_install_python(PROGRAMS
+ #  src/a_star_Gutsav_v4.py
+  # DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ #)#
  
   catkin_install_python(PROGRAMS
    src/end_pose.py
