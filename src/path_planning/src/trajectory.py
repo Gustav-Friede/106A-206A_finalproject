@@ -92,11 +92,15 @@ def plan_curved_trajectory(algo_waypoints):
     for waypoint in algo_waypoints:
         x, y, theta = waypoint
 
-        x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
-        y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
+        x2 = x * np.cos(yaw) - y * np.sin(yaw) + x1
+        y2 = x * np.sin(yaw) + y * np.cos(yaw) + y1
 
-        transformed_waypoints.append((x_transformed, y_transformed, theta))
+        added_waypoints = generate_bezier_waypoints(x1, y1, yaw, x2, y2, yaw, offset=0.2, num_points=10)
 
+        for point in added_waypoints:
+            transformed_waypoints.append(point)
+        
+    
     #add ARTag (goal pos)
     #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
     #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
