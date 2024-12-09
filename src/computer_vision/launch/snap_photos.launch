@@ -1,0 +1,7 @@
+<launch>
+  <!-- Load parameters from YAML -->
+  <rosparam file="$(find computer_vision)/config/snap_photos.yaml" command="load"/>
+
+  <!-- Launch the snap_photos node -->
+  <node pkg="computer_vision" type="snap_photos.py" name="photo_snapper" output="screen"/>
+</launch>

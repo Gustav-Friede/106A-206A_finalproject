@@ -1,0 +1,4 @@
+<launch>
+    <node name="occupancy_grid_publisher" pkg="pathfinder_pkg" type="occupancy_grid_publisher.py" output="screen"/>
+    <node name="trajectory_planner" pkg="pathfinder_pkg" type="trajectory.py" output="screen"/>
+</launch>
