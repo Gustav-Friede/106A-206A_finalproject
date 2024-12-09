@@ -25,9 +25,10 @@ class ARTagDetector:
         self.cv_color_image = None
         self.cv_depth_image = None
 
-        self.color_image_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.color_image_callback)
-        self.depth_image_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, self.depth_image_callback)
-        self.camera_info_sub = rospy.Subscriber("/camera/color/camera_info", CameraInfo, self.camera_info_callback)
+        #for logitech camera
+        self.color_image_sub = rospy.Subscriber("/usb_cam/image_raw", Image, self.color_image_callback)
+        #self.depth_image_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, self.depth_image_callback)
+        self.camera_info_sub = rospy.Subscriber("/usb_cam/camera_info", CameraInfo, self.camera_info_callback)
 
         self.fx = None
         self.fy = None
@@ -65,11 +66,11 @@ class ARTagDetector:
     def color_image_callback(self, msg):
         try:
             # Convert the ROS Image message to an OpenCV image (BGR8 format)
-            self.cv_color_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            #self.cv_color_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
 
             # If we have both color and depth images, process them
-            if self.cv_depth_image is not None:
-                self.process_images()
+            #if self.cv_depth_image is not None:
+            self.detect_process_ar_tags()
 
         except Exception as e:
             print("Error:", e)
@@ -109,7 +110,7 @@ class ARTagDetector:
             u_pixel = np.mean(marker_corners[:, 0])
             v_pixel = np.mean(marker_corners[:, 1])
 
-            pixel_point = PointStamped
+            pixel_point = PointStamped()
             pixel_point.header.stamp = rospy.Time.now()
             pixel_point.header.frame_id = str(id_)
 
