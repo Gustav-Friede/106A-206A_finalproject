@@ -11,17 +11,18 @@ class BirdsEyeViewNode:
         # Subscribe to rectified image
         self.image_topic = rospy.get_param("~image_topic", "/head_camera/image_rect_color")
 
-        # Example image_points and world_points
-        # Adjust these based on known correspondences in your scene
-        self.image_points = np.array([[150, 35],
-                                      [524, 32],
-                                      [635, 344],
-                                      [0, 331]], dtype=np.float32)
 
-        self.world_points = np.array([[0.0,   0.0],
-                                      [1.524, 0.0],
-                                      [1.524, 1.524],
-                                      [0.0,   1.524]], dtype=np.float32)
+        self.image_points = np.array([[131., 60.],
+                                      [508., 66.],
+                                      [619., 437.],
+                                      [27., 437.]], dtype=np.float32)
+
+        self.world_points = np.array([
+            [0.0, 0.0],  # top-left
+            [1.524, 0.0],  # top-right
+            [1.524, 1.524],  # bottom-right
+            [0.0, 1.524]  # bottom-left
+        ], dtype=np.float32)
 
         # Compute homography
         self.H, _ = cv.findHomography(self.image_points, self.world_points)

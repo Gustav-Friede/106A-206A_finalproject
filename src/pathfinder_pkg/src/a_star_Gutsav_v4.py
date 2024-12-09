@@ -109,7 +109,7 @@ def process_occupancy_grid(occupancy_grid_msg):
         row_nodes = []    #empty row
         for j in range(columns):    #fill row
             node = Node(j, i)    #create node
-            node.type = oc_grid[j, i]
+            node.type = oc_grid[i, j]
             row_nodes.append(node)    #add node to row
         grid.append(row_nodes)    #add row to grid
 
@@ -124,13 +124,13 @@ def add_buffer(grid, buffer, start, end):
 
     for i in range(rows):
         for j in range(columns):
-            if grid[j][i].type > 51:    #if it's an obstacle
+            if grid[i][j].type > 51:    #if it's an obstacle
                 for di in range(-buffer, buffer + 1):
                     for dj in range(-buffer, buffer + 1):
                         ni, nj = i + di, j + dj
                         if ni >= 0 and nj >= 0 and nj < columns and ni < rows:    #check if the neighbor is in bounds and within the buffer distance
-                            if grid[nj][ni] != start and grid[nj][ni] != end and grid[nj][ni].type != 100:    #avoid overwriting start, end, or 100
-                                    grid[nj][ni].type = 51    #set psudo obstacle
+                            if grid[ni][nj] != start and grid[ni][nj] != end and grid[ni][nj].type != 100:    #avoid overwriting start, end, or 100
+                                    grid[ni][nj].type = 51    #set psudo obstacle
                                     
     return grid
 
@@ -211,12 +211,12 @@ def plot(occupancy_grid_msg, start, end):
             
     for i in range(rows1):
         for j in range(columns1):
-            if grid[j][i].type == 100:
-                oc1_x.append(grid[j][i].x)
-                oc1_y.append(grid[j][i].y)
-            elif grid[j][i].type == 51:
-                poc1_x.append(grid[j][i].x)
-                poc1_y.append(grid[j][i].y)
+            if grid[i][j].type == 100:
+                oc1_x.append(grid[i][j].x)
+                oc1_y.append(grid[i][j].y)
+            elif grid[i][j].type == 51:
+                poc1_x.append(grid[i][j].x)
+                poc1_y.append(grid[i][j].y)
                 
     plt.plot(oc1_x, oc1_y, 's', color='black', markersize=1.7)
     plt.plot(poc1_x, poc1_y, 's', color='grey', markersize=1.7)
@@ -241,9 +241,9 @@ def plot(occupancy_grid_msg, start, end):
 
     for i in range(rows1):
         for j in range(columns1):
-            if grid[j][i].type == 51:
-                poc1_x.append(grid[j][i].x)
-                poc1_y.append(grid[j][i].y)
+            if grid[i][j].type == 51:
+                poc1_x.append(grid[i][j].x)
+                poc1_y.append(grid[i][j].y)
                 
     plt.plot(path1_x, path1_y, color='red', linewidth=0.5, marker='o', markersize=0.01)
     plt.plot(oc1_x, oc1_y, 's', color='black', markersize=1.7)

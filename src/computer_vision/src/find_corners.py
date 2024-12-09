@@ -8,8 +8,8 @@ MORPH_KERNEL_SIZE = (2, 2)
 
 # initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-#img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_000.png')
-img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
+img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_002.png')
+#img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
 img = cv.imread(img_path)
 if img is None:
     raise FileNotFoundError("Image not found at the specified path.")

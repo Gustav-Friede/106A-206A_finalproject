@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 # initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_000.png')
+img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_002.png')
 #img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
 img = cv.imread(img_path)
 if img is None:
@@ -18,14 +18,12 @@ hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # cv.imshow('HSV', hsv)
 # waitKey(5000)
 
-# Define color ranges for the white tape
-# You may need to adjust these bounds depending on your tape and lighting.
-# The given example tries to capture bright white regions.
+
 lower_white = np.array([0, 0, 115])   # Lower boundary for (H,S,V)
 upper_white = np.array([179, 36, 255]) # Upper boundary for (H,S,V)
 mask = cv.inRange(hsv, lower_white, upper_white)
 
-# Optional: apply morphological operations to clean up the mask
+# apply morphological operations to clean up the mask
 kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
 mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernel)
 mask = cv.morphologyEx(mask, cv.MORPH_OPEN, kernel)
@@ -36,7 +34,7 @@ if not contours:
     print("No contours found in the mask. Adjust the HSV ranges or lighting.")
     exit(1)
 
-# Sort contours by area, largest first
+# sort contours by area, largest first
 contours = sorted(contours, key=cv.contourArea, reverse=True)
 
 maze_contour = None
@@ -73,7 +71,7 @@ cv.drawContours(result_img, [maze_contour], -1, (0,255,0), 5)
 for (x, y) in ordered_corners:
     cv.circle(result_img, (int(x), int(y)), 15, (0,0,255), -1)
 
-# Display the results
+# show the results
 plt.figure(figsize=(10,5))
 plt.subplot(1,2,1)
 plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))

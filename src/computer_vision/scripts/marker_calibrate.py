@@ -68,9 +68,9 @@ if __name__ == '__main__':
     # load parameters (same as snap_photos.yaml) of the marker board
     aruco_dict_name = rospy.get_param('~aruco_dictionary', 'DICT_6X6_250')
     squares_horizontally = rospy.get_param('~squares_horizontally', 5)
-    squares_vertically = rospy.get_param('~squares_vertically', 7)
-    square_length = rospy.get_param('~square_length', 0.03)
-    marker_length = rospy.get_param('~marker_length', 0.015)
+    squares_vertically = rospy.get_param('~squares_vertically', 5)
+    square_length = rospy.get_param('~square_length', 0.3048)
+    marker_length = rospy.get_param('~marker_length', 0.15)
 
     # convert dict to a constant and save it to the imgs directory as camera_snapshots
     aruco_dict = getattr(cv.aruco, aruco_dict_name)

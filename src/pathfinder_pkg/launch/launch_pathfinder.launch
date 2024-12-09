@@ -1,6 +1,4 @@
 <launch>
-    <node name="slam_node" pkg="pathfinder_pkg" type="slam.py" output="screen"/>
-    <node name="end_pose_publisher" pkg="pathfinder_pkg" type="end_pose.py" output="screen"/>
-    <node name="goal_pose_publisher" pkg="pathfinder_pkg" type="pose.py" output="screen"/>
+    <node name="occupancy_grid_publisher" pkg="pathfinder_pkg" type="occupancy_grid_publisher.py" output="screen"/>
     <node name="trajectory_planner" pkg="pathfinder_pkg" type="trajectory.py" output="screen"/>
 </launch>
