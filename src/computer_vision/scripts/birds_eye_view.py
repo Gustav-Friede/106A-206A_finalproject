@@ -9,22 +9,20 @@ from sensor_msgs.msg import Image
 class BirdsEyeViewNode:
     def __init__(self):
         # Subscribe to rectified image
-        self.image_topic = rospy.get_param("~image_topic", "/head_camera/image_rect_color")
-
-
-        self.image_points = np.array([[131., 60.],
-                                      [508., 66.],
-                                      [619., 437.],
-                                      [27., 437.]], dtype=np.float32)
+        self.image_topic = rospy.get_param("~image_topic", "/usb_cam/image_raw")
+        self.image_points = np.array([[127, 46],
+                                      [503, 70],
+                                      [592, 426],
+                                      [14, 410]], dtype=np.float32)
 
         self.world_points = np.array([
-            [0.0, 0.0],  # top-left
-            [1.524, 0.0],  # top-right
-            [1.524, 1.524],  # bottom-right
-            [0.0, 1.524]  # bottom-left
+            [0.0, 0.0],
+            [680.0, 0.0],
+            [680.0, 680.0],
+            [0.0, 680.0]
         ], dtype=np.float32)
 
-        # Compute homography
+        # find homography
         self.H, _ = cv.findHomography(self.image_points, self.world_points)
         if self.H is None:
             rospy.logerr("Could not compute homography. Check your correspondences.")
@@ -32,7 +30,7 @@ class BirdsEyeViewNode:
         rospy.loginfo("Homography matrix computed.")
 
         # Output size for the bird’s-eye view
-        self.output_size = (680, 480)  # width, height
+        self.output_size = (700, 680)  # width, height
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
@@ -41,9 +39,10 @@ class BirdsEyeViewNode:
         rospy.loginfo(f"BirdsEyeViewNode subscribed to: {self.image_topic}")
 
     def image_callback(self, msg):
+        print('image_callback triggered')
         cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
-        # Since image is already rectified by image_proc, no need for undistort
+
         birds_eye = cv.warpPerspective(cv_image, self.H, self.output_size)
 
         cv.imshow("Bird's-Eye View", birds_eye)

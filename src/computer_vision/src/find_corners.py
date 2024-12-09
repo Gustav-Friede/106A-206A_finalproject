@@ -4,11 +4,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-MORPH_KERNEL_SIZE = (2, 2)
+MORPH_KERNEL_SIZE = (4, 4)
 
 # initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_002.png')
+img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_000.png')
 #img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
 img = cv.imread(img_path)
 if img is None:
