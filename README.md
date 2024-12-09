@@ -1,11 +1,14 @@
 Setup commands
 
-# Step 1: capture images using snap_photos (for camera calibration using chAruco board)
-roslaunch computer_vision snap_photos.launch
+# Initial Setup:
 
-# Step 2: run the marker calibration
-rosrun computer_vision marker_calibrate.py
+  # Capture images using snap_photos (for camera calibration using chAruco board)
+    roslaunch computer_vision snap_photos.launch
 
-# Step 3: start bird's eye view node after calibration finishes
-rosun computer_vision birds_eye_view.py
+  # Run the marker calibration to ensure accurary
+    rosrun computer_vision marker_calibrate.py
+
+
+  # Display bird's eye view camera feed after calibration finishes
+    rosun computer_vision birds_eye_view.py
 
