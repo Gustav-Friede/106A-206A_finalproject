@@ -1,0 +1,4 @@
+<launch>
+    <node name="slam_node" pkg="pathfinder_pkg" type="slam<node name="slam_node" pkg="pathfinder_pkg" type="slam.py" output="screen"/>.py" output="screen"/>
+    <node name="goal_handler" pkg="my_package" type="goal_handler.py" output="screen"/>
+</launch>

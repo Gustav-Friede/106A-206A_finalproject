@@ -23,8 +23,8 @@ def publish_end_pose():
         end_pose.header.frame_id = "map"
 
         # Generiere zufällige Zielkoordinaten (z. B. innerhalb von 10x10 Metern)
-        end_pose.pose.position.x = 5#random.randint(0, 99)
-        end_pose.pose.position.y = 5#random.randint(0, 99)
+        end_pose.pose.position.x = 30#random.randint(0, 99)
+        end_pose.pose.position.y = 26#random.randint(0, 99)
         end_pose.pose.position.z = 0  # Planare Bewegung
 
         # Feste Orientierung (z. B. kein Drehmoment)
