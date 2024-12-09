@@ -9,7 +9,7 @@ MAX_THRESH_VALUE = 255
 
 # read image
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..','camera_calibration', 'camera_snapshots', 'snapshot_000.png')
+img_path = os.path.join(script_dir, '..', '..', '..','camera_calibration', 'calibrated_maze', 'snapshot_000.png')
 img = cv.imread(img_path, cv.IMREAD_REDUCED_GRAYSCALE_8)
 
 # extract edges and remove background

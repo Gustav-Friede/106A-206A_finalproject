@@ -77,7 +77,7 @@ def plan_curved_trajectory(algo_waypoints):
             print(trans)
             break
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
-            print("TF Error: " + e)
+            print("TF Error: " + str(e))
             continue
     x1, y1 = trans.transform.translation.x, trans.transform.translation.y
     (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
@@ -89,9 +89,10 @@ def plan_curved_trajectory(algo_waypoints):
 
     transformed_waypoints = []
 
-    for waypoint in algo_waypoints:
-        x, y, theta = waypoint
+    for i in range(len(algo_waypoints)):
+        x, y, theta = algo_waypoints[i]
 
+<<<<<<< HEAD
         x2 = x * np.cos(yaw) - y * np.sin(yaw) + x1
         y2 = x * np.sin(yaw) + y * np.cos(yaw) + y1
 
@@ -106,11 +107,47 @@ def plan_curved_trajectory(algo_waypoints):
     #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
     #final_waypoint = (x2, y2, yaw)
    # transformed_waypoints.append(final_waypoint)
+=======
+        x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
+        y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
+        
+        if i < len(algo_waypoints) - 1:  # For intermediate waypoints
+            next_x, next_y, _ = algo_waypoints[i + 1]
+            orientation = math.atan2(next_y - y, next_x - x)
+        else:  # For the last waypoint
+            prev_x, prev_y, _ = algo_waypoints[i - 1]
+            orientation = math.atan2(y - prev_y, x - prev_x)
 
+        # Append the transformed waypoint
+        transformed_waypoints.append((x_transformed, y_transformed, orientation))
+
+        # Detect and handle turns
+        if i > 0 and i < len(algo_waypoints) - 1:
+            prev_x, prev_y, _ = algo_waypoints[i - 1]
+            next_x, next_y, _ = algo_waypoints[i + 1]
+>>>>>>> 955bfc2bf9dfb5d68ae692874b479a9a54cec2e4
+
+            dx1, dy1 = x - prev_x, y - prev_y
+            dx2, dy2 = next_x - x, next_y - y
+
+            # If there's a turn, add a waypoint to change orientation in place
+            if not (math.isclose(dx1, dx2) and math.isclose(dy1, dy2)):
+                turn_orientation = math.atan2(next_y - y, next_x - x)
+                transformed_waypoints.append((x_transformed, y_transformed, turn_orientation))
+
+    # Plot the trajectory for visualization
     plot_trajectory(transformed_waypoints)
 
-    #all waypoints are in the base_footprint frame
+    # Return the list of transformed waypoints
     return transformed_waypoints
+
+def wayp(x, y, next_x, next_y):
+    orientation = math.atan2(next_y -y, next_x - x)
+    return (x, y, orientation)
+
+
+
+
     
 
 if __name__ == '__main__':

@@ -13,10 +13,10 @@ class PhotoSnapper:
         self.save_subdir = rospy.get_param('~save_subdir', 'camera_snapshots')
         self.aruco_dict_name = rospy.get_param('~aruco_dictionary', 'DICT_6X6_250')
         self.squares_horizontally = rospy.get_param('~squares_horizontally', 5)
-        self.squares_vertically = rospy.get_param('~squares_vertically', 7)
-        self.square_length = rospy.get_param('~square_length', 0.03)
-        self.marker_length = rospy.get_param('~marker_length', 0.015)
-        self.total_page_length_px = rospy.get_param('~total_page_length_px', 640)
+        self.squares_vertically = rospy.get_param('~squares_vertically', 5)
+        self.square_length = rospy.get_param('~square_length', 0.3048)
+        self.marker_length = rospy.get_param('~marker_length', 0.15)
+        self.total_page_length_px = rospy.get_param('~total_page_length_px', 2000)
         self.margin_px = rospy.get_param('~margin_px', 20)
 
         # set up save directory inside imgs/
@@ -100,3 +100,4 @@ if __name__ == '__main__':
     except rospy.ROSInterruptException:
         pass
     cv.destroyAllWindows()
+

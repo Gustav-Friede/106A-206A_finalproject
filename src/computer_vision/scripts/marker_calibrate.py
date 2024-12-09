@@ -19,7 +19,7 @@ def calibrate_parameters(aruco_dict, squares_horizontally, squares_vertically, s
     for img_file in img_files:
         img = cv.imread(img_file)
         if img is None:
-            continuec
+            continue
 
 
         if height is None or width is None:
