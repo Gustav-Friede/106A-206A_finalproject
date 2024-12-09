@@ -1,0 +1,227 @@
+def plan_curved_trajectory(algo_waypoints):
+    #adds the final goal point to path and converts the values to base_footprint
+    tfBuffer = tf2_ros.Buffer() 
+    tfListener = tf2_ros.TransformListener(tfBuffer) 
+
+    while not rospy.is_shutdown():
+        try:
+            trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
+            print(trans)
+            break
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+            print("TF Error: " + e)
+            continue
+    x1, y1 = trans.transform.translation.x, trans.transform.translation.y
+    (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
+        [trans.transform.rotation.x, trans.transform.rotation.y,
+            trans.transform.rotation.z, trans.transform.rotation.w])
+
+    #add last waypoint to algo_waypoints after transformation as the arTag position 
+    #SETUP depending on turtlebot and which ar tag we use
+
+    transformed_waypoints = []
+    current_orientation = yaw
+
+    #for waypoint in algo_waypoints:
+    for i in range(len(algo_waypoints) - 1):
+        x, y, theta = algo_waypoints[i]
+
+        x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
+        y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
+
+        next_x, next_y, _ = algo_waypoints[i+1]
+
+        #next
+        next_x_transformed = next_x * np.cos(yaw) - next_y * np.sin(yaw) + x1
+        next_y_transformed = next_x * np.sin(yaw) + next_y * np.cos(yaw) + y1        
+        #x_transformed = x * np.cos(current_orientation)) - y * np.sin(current_orientation) + x1
+        #y_transformed = x * np.sin(current_orientation) + y * np.cos(current_orientation) + y1
+
+        #orientation = math.atan2(next_y - y, next_x - x)
+        
+        #only makes 90 degree movements
+        if next_x > x:
+            orientation = 0
+        elif next_x < x:
+            orientation = math.pi
+        elif next_y > y:
+            orientation = math.pi / 2
+        elif next_y < y:
+            orientation = -math.pi / 2
+        else:
+            orientation = current_orientation
+
+        transformed_waypoints.append((x_transformed, y_transformed, orientation))
+
+        if i < len(algo_waypoints) - 2:
+            next_orientation = math.atan2(next_y - y, next_x -x)
+            if next_orientation != orientation:
+                transformed_waypoints.append((next_x_transformed, next_y_transformed, next_orientation))
+    #add ARTag (goal pos)
+    #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
+    #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
+    #final_waypoint = (x2, y2, yaw)
+   # transformed_waypoints.append(final_waypoint)
+
+    final_x, final_y, _ = algo_waypoints[-1]
+    final_x_transformed = x1 + final_x * np.cos(yaw) - final_y * np.sin(yaw)
+    final_y_transformed = y1 + final_x * np.sin(yaw) + final_y * np.cos(yaw)
+    final_orientation = math.atan2(final_y - algo_waypoints[-2][1], final_x - algo_waypoints[-2][0])
+    transformed_waypoints.append((final_x_transformed, final_y_transformed, final_orientation))
+
+    plot_trajectory(transformed_waypoints)
+
+    #all waypoints are in the base_footprint frame
+    return transformed_waypoints
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    def plan_curved_trajectory(algo_waypoints):
+    #adds the final goal point to path and converts the values to base_footprint
+    tfBuffer = tf2_ros.Buffer() 
+    tfListener = tf2_ros.TransformListener(tfBuffer) 
+
+    while not rospy.is_shutdown():
+        try:
+            trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
+            print(trans)
+            break
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+            print("TF Error: " + e)
+            continue
+    x1, y1 = trans.transform.translation.x, trans.transform.translation.y
+    (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
+        [trans.transform.rotation.x, trans.transform.rotation.y,
+            trans.transform.rotation.z, trans.transform.rotation.w])
+
+    #add last waypoint to algo_waypoints after transformation as the arTag position 
+    #SETUP depending on turtlebot and which ar tag we use
+
+    transformed_waypoints = []
+    current_orientation = yaw
+
+    #for waypoint in algo_waypoints:
+    for i in range(len(algo_waypoints)):
+        x, y, theta = algo_waypoints[i]
+
+        x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
+        y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
+
+        if i < len(algo_waypoints) - 1:
+            next_x, next_y, _ = algo_waypoints[i+1]
+            orientation = math.atan2(next_y - y, next_x - x)
+            #if abs(next_orientation - orientation) > 1e-3:
+            #    transformed_waypoints.append(x_transformed, y_transformed, next_orientation)
+        else:
+            orientation = math.atan2(y - algo_waypoints[i - 1][1], x -algo_waypoints[i - 1][0])
+
+        transformed_waypoints.append((x_transformed, y_transformed, orientation))
+
+    #add ARTag (goal pos)
+    #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
+    #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
+    #final_waypoint = (x2, y2, yaw)
+   # transformed_waypoints.append(final_waypoint)
+    plot_trajectory(transformed_waypoints)
+
+    #all waypoints are in the base_footprint frame
+    return transformed_waypoints
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    def plan_curved_trajectory(algo_waypoints):
+    #adds the final goal point to path and converts the values to base_footprint
+    tfBuffer = tf2_ros.Buffer() 
+    tfListener = tf2_ros.TransformListener(tfBuffer) 
+
+    while not rospy.is_shutdown():
+        try:
+            trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
+            print(trans)
+            break
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+            print("TF Error: " + str(e))
+            continue
+    x1, y1 = trans.transform.translation.x, trans.transform.translation.y
+    (roll, pitch, yaw) = tf.transformations.euler_from_quaternion(
+        [trans.transform.rotation.x, trans.transform.rotation.y,
+            trans.transform.rotation.z, trans.transform.rotation.w])
+
+    #add last waypoint to algo_waypoints after transformation as the arTag position 
+    #SETUP depending on turtlebot and which ar tag we use
+
+    transformed_waypoints = []
+
+    for i in range(len(algo_waypoints)):
+        x, y, theta = algo_waypoints[i]
+
+        x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
+        y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
+        
+        #if a turn happens
+        if i > 0 and i < len(algo_waypoints) -1:
+            prev_x, prev_y, _ = algo_waypoints[i-1]
+            next_x, next_y, _ = algo_waypoints[i+1]
+            dx1 = prev_x - x
+            dx2 = x - next_x
+            #dy1 = prev_y - y
+            #dy2 = y - next_y
+            if dx1 != dx2:
+                transformed_waypoints.append(wayp(x, y, next_x, next_y))
+
+
+        if i < len(algo_waypoints) - 1:
+            next_x, next_y, _ = algo_waypoints[i+1]
+            orientation = math.atan2(next_y -y, next_x - x)
+
+        else:
+            prev_x, prev_y, _ = algo_waypoints[1]
+            orientation = math.atan2(y - prev_y, x - prev_x)
+
+        # #for 90 degree turns
+        # if transformed_waypoints:
+        #     _, _, current_orientation = transformed_waypoints[i]
+        #     if abs(orientation - current_orientation) >1e-2:
+        #         transformed_waypoints.append((x_transformed, y_transformed, orientation))
+
+        transformed_waypoints.append((x_transformed, y_transformed, orientation))
+
+    #add ARTag (goal pos)
+    #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
+    #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
+    #final_waypoint = (x2, y2, yaw)
+   # transformed_waypoints.append(final_waypoint)
+
+    plot_trajectory(transformed_waypoints)
+
+    #all waypoints are in the base_footprint frame
+    return transformed_waypoints
+    
+    
+    
+    
+    
+    
+    
+    
