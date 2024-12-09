@@ -7,9 +7,7 @@ def nothing(x):
 
 # initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_002.png')
-#img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'maze_map_labroom_with_marker.png')
-#img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
+img_path = os.path.join(script_dir, '..', 'data', 'camera_calibration', 'snapshot_00.png')
 image = cv2.imread(img_path)
 if image is None:
     raise FileNotFoundError("Image not found at the specified path.")

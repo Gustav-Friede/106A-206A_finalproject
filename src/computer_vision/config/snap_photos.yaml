@@ -1,5 +1,13 @@
+
+# camera topics
 image_topic: "/usb_cam/image_raw"
+camera_name: "usb_cam"
+video_device: "/dev/video0"
+
+# directory paths
 save_subdir: "camera_snapshots"
+
+# configuration/calibration for chAruco board
 aruco_dictionary: "DICT_6X6_250"
 squares_horizontally: 5
 squares_vertically: 5
@@ -7,3 +15,7 @@ square_length: 0.3048
 marker_length: 0.15
 total_page_length_px: 2000
 margin_px: 20
+
+
+
+

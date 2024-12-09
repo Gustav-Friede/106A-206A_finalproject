@@ -10,7 +10,8 @@ class PhotoSnapper:
     def __init__(self):
         # load parameters from the parameter server
         self.image_topic = rospy.get_param('~image_topic', '/usb_cam/image_raw')
-        self.save_subdir = rospy.get_param('~save_subdir', 'camera_snapshots')
+        self.camera_name = rospy.get_param('~camera_name', 'usb_cam')
+        self.video_device = rospy.get_param('~video_device', '/dev/video0')
         self.aruco_dict_name = rospy.get_param('~aruco_dictionary', 'DICT_6X6_250')
         self.squares_horizontally = rospy.get_param('~squares_horizontally', 5)
         self.squares_vertically = rospy.get_param('~squares_vertically', 5)
@@ -22,6 +23,7 @@ class PhotoSnapper:
         # set up save directory inside imgs/
         self.aruco_dict = getattr(cv.aruco, self.aruco_dict_name)
         script_dir = os.path.dirname(os.path.realpath(__file__))
+        self.save_subdir = rospy.get_param('~save_subdir', 'camera_snapshots')
         self.save_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', self.save_subdir)
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)

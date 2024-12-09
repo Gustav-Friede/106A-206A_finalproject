@@ -92,7 +92,7 @@ def plan_curved_trajectory(algo_waypoints):
     for i in range(len(algo_waypoints)):
         x, y, theta = algo_waypoints[i]
 
-<<<<<<< HEAD
+#<<<<<<< HEAD CAITLINS CODE
         x2 = x * np.cos(yaw) - y * np.sin(yaw) + x1
         y2 = x * np.sin(yaw) + y * np.cos(yaw) + y1
 
@@ -107,7 +107,8 @@ def plan_curved_trajectory(algo_waypoints):
     #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
     #final_waypoint = (x2, y2, yaw)
    # transformed_waypoints.append(final_waypoint)
-=======
+
+#======= GUSTAVS CODE
         x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
         y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
         
@@ -125,7 +126,7 @@ def plan_curved_trajectory(algo_waypoints):
         if i > 0 and i < len(algo_waypoints) - 1:
             prev_x, prev_y, _ = algo_waypoints[i - 1]
             next_x, next_y, _ = algo_waypoints[i + 1]
->>>>>>> 955bfc2bf9dfb5d68ae692874b479a9a54cec2e4
+#>>>>>>> 955bfc2bf9dfb5d68ae692874b479a9a54cec2e4
 
             dx1, dy1 = x - prev_x, y - prev_y
             dx2, dy2 = next_x - x, next_y - y
@@ -146,9 +147,6 @@ def wayp(x, y, next_x, next_y):
     return (x, y, orientation)
 
 
-
-
-    
 
 if __name__ == '__main__':
     rospy.init_node('turtlebot_controller', anonymous=True)

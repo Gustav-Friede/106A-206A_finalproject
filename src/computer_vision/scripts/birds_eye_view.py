@@ -16,11 +16,18 @@ class BirdsEyeViewNode:
 
         # initialize directory paths
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots',
+        img_path = os.path.join(script_dir,
+                                '..',
+                                'data',
+                                'camera_snapshots',
                                 'snapshot_000.png')
-        # img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
-        self.save_subdir = rospy.get_param('~save_subdir', 'calibrated_maze')
-        self.save_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', self.save_subdir)
+
+        self.save_subdir = rospy.get_param('~save_subdir', 'calibrated_hsv_maze')
+        self.save_dir = os.path.join(script_dir,
+                                     '..',
+                                     'camera_calibration',
+                                     self.save_subdir)
+
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
@@ -38,13 +45,11 @@ class BirdsEyeViewNode:
         kernel = cv.getStructuringElement(cv.MORPH_RECT, MORPH_KERNEL_SIZE)
         closed = cv.morphologyEx(thresh, cv.MORPH_CLOSE, kernel)
 
-        # find contours in the processed image
+        # find contours in the processed image and pick the largest contour with hope it's the maze outline
         contours, hierarchy = cv.findContours(closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         if not contours:
             print("No contours found. Consider adjusting THRESH_VALUE or MORPH_KERNEL_SIZE.")
             exit(1)
-
-        # sort contours by area and pick the largest contour assuming it's the maze outline
         contours = sorted(contours, key=cv.contourArea, reverse=True)
         maze_contour = None
 
@@ -69,7 +74,7 @@ class BirdsEyeViewNode:
         maze_corners = np.zeros((4, 2), dtype=np.int32)
         s = corners.sum(axis=1)
 
-        # top-left point has smallest difference (x-y)
+        # top-left point has the smallest difference (x-y)
         # bottom-right point will have the largest sum (x+y)
         maze_corners[0] = corners[np.argmin(s)]
         maze_corners[2] = corners[np.argmax(s)]
@@ -79,7 +84,7 @@ class BirdsEyeViewNode:
         maze_corners[3] = corners[np.argmax(diff)]
 
 
-        # Subscribe to rectified image
+        # subscribe to rectified image
         self.image_topic = rospy.get_param("~image_topic", "/usb_cam/image_raw")
         self.image_points = maze_corners
 
@@ -133,20 +138,7 @@ class BirdsEyeViewNode:
                 rospy.logwarn("No image to save.")
         if key == ord('Q'):
             rospy.signal_shutdown("User requested shutdown.")
-        # if key == ord('M'):
-        #
-        #
-        # def snap_image(self):
-        #
-        #     if self.latest_image is not None:
-        #         filename = f"snapshot_{self.image_count:03d}.png"
-        #         filepath = os.path.join(self.save_dir, filename)
-        #         cv.imwrite(filepath, self.latest_image)
-        #         rospy.loginfo(f"Saved image: {filepath}")
-        #         self.image_count += 1
-        #     else:
-        #         rospy.logwarn("No image to save.")
-        #
+
 
 if __name__ == "__main__":
     rospy.init_node('birds_eye_view_node', anonymous=True)

@@ -9,8 +9,8 @@ MAX_THRESH_VALUE = 255
 
 # read image
 script_dir = os.path.dirname(os.path.abspath(__file__))
-image_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'calibrated_maze', 'sat_0.png')
-img = cv.imread(image_path, cv.IMREAD_REDUCED_GRAYSCALE_2)
+image_path = os.path.join(script_dir, '..', 'data', 'camera_calibration', 'calibrated_hsv_maze', 'sat_0.png')
+img = cv.imread(image_path, cv.IMREAD_REDUCED_GRAYSCALE_4)
 
 # extract edges and remove background
 edges = cv.Canny(img, MIN_THRESH_VALUE, MAX_THRESH_VALUE)
@@ -27,14 +27,8 @@ for corner in corners:
     cv.circle(res, (int(x), int(y)), 5, 0, -1)
 
 image = cv.findContours(img_wc, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-print(image)
-#plt.imshow(image)
 
-# cv.imshow('edge and corners', img_wc)
-# cv.waitKey(0)
-# cv.destroyAllWindows()
-
-# Display original and edge-detected images
+# display original and edge-detected images
 plt.figure(figsize=(10, 5))
 #
 # original Image
@@ -51,3 +45,7 @@ plt.title('Edge and Corners')
 
 plt.tight_layout()
 plt.show()
+
+
+# find_corners.py code, just in case i need to use it later
+
