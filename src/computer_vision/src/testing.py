@@ -5,17 +5,16 @@ from matplotlib import pyplot as plt
 
 # initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_000.png')
+img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_002.png')
 #img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'maze_map_labroom_with_marker.png')
 #img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
 img = cv.imread(img_path)
 if img is None:
     raise FileNotFoundError("Image not found at the specified path.")
 
-# Convert to HSV
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
-# Define color ranges for the white tape (adjust as needed)
+# define color ranges for the white tape (adjust as needed)
 sensitivity = 40
 lower_white = np.array([0, 0, 115])
 upper_white = np.array([90, 40, 255])

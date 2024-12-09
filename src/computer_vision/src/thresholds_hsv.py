@@ -5,10 +5,14 @@ import numpy as np
 def nothing(x):
     pass
 
-# load image
+# initialize directory paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
+img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots', 'snapshot_002.png')
+#img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'maze_map_labroom_with_marker.png')
+#img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
 image = cv2.imread(img_path)
+if image is None:
+    raise FileNotFoundError("Image not found at the specified path.")
 
 # screen size
 screen_width = 1920
@@ -38,7 +42,7 @@ cv2.createTrackbar('HMax','image',0,179,nothing)
 cv2.createTrackbar('SMax','image',0,255,nothing)
 cv2.createTrackbar('VMax','image',0,255,nothing)
 
-# Set default values for MAX HSV trackbars.
+# git default values for MAX HSV trackbars.
 cv2.setTrackbarPos('HMax', 'image', 179)
 cv2.setTrackbarPos('SMax', 'image', 255)
 cv2.setTrackbarPos('VMax', 'image', 255)
