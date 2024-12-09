@@ -7,13 +7,75 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
 class BirdsEyeViewNode:
+
+
     def __init__(self):
+
+        MORPH_KERNEL_SIZE = (4, 4)
+
+        # initialize directory paths
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots',
+                                'snapshot_000.png')
+        # img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
+        img = cv.imread(img_path)
+        if img is None:
+            raise FileNotFoundError("Image not found at the specified path.")
+
+        # threshold the image to create a binary mask
+        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        clahe = cv.createCLAHE(clipLimit=1.0, tileGridSize=(8, 8))
+        gray = clahe.apply(gray)
+        _, thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+
+        # fill small holes and consolidate the maze shape using morphological closing
+        kernel = cv.getStructuringElement(cv.MORPH_RECT, MORPH_KERNEL_SIZE)
+        closed = cv.morphologyEx(thresh, cv.MORPH_CLOSE, kernel)
+
+        # find contours in the processed image
+        contours, hierarchy = cv.findContours(closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        if not contours:
+            print("No contours found. Consider adjusting THRESH_VALUE or MORPH_KERNEL_SIZE.")
+            exit(1)
+
+        # sort contours by area and pick the largest contour assuming it's the maze outline
+        contours = sorted(contours, key=cv.contourArea, reverse=True)
+        maze_contour = None
+
+        # approximate the contour to a polygon
+        for cnt in contours:
+            perimeter = cv.arcLength(cnt, True)
+            epsilon = 0.03 * perimeter  # Adjust epsilon if needed
+            approx = cv.approxPolyDP(cnt, epsilon, True)
+
+            # ensure approximated polygon has 4 vertices
+            if len(approx) == 4:
+                maze_contour = approx
+                break
+
+        if maze_contour is None:
+            print("No quadrilateral found. Try adjusting preprocessing steps.")
+            exit(1)
+
+        # sort corners by y-coordinate and allow x-coordinate be the tie-breaker
+        corners = maze_contour.reshape(4, 2)
+
+        maze_corners = np.zeros((4, 2), dtype=np.int32)
+        s = corners.sum(axis=1)
+
+        # top-left point has smallest difference (x-y)
+        # bottom-right point will have the largest sum (x+y)
+        maze_corners[0] = corners[np.argmin(s)]
+        maze_corners[2] = corners[np.argmax(s)]
+
+        diff = np.diff(corners, axis=1)
+        maze_corners[1] = corners[np.argmin(diff)]
+        maze_corners[3] = corners[np.argmax(diff)]
+
+
         # Subscribe to rectified image
         self.image_topic = rospy.get_param("~image_topic", "/usb_cam/image_raw")
-        self.image_points = np.array([[127, 46],
-                                      [503, 70],
-                                      [592, 426],
-                                      [14, 410]], dtype=np.float32)
+        self.image_points = maze_corners
 
         self.world_points = np.array([
             [0.0, 0.0],
@@ -29,7 +91,7 @@ class BirdsEyeViewNode:
             raise ValueError("Invalid image_points or world_points for homography.")
         rospy.loginfo("Homography matrix computed.")
 
-        # Output size for the bird’s-eye view
+        # output window screen size for the bird’s-eye view
         self.output_size = (700, 680)  # width, height
 
         self.bridge = CvBridge()
