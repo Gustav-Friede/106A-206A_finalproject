@@ -6,7 +6,7 @@ import rospy
 import tf
 import numpy as np
 import cv2
-import arco_dict
+#import arco_dict
 
 import matplotlib.pyplot as plt
 
@@ -98,10 +98,10 @@ def plan_curved_trajectory(final_position, algo_waypoints):
         transformed_waypoints.append((x_transformed, y_transformed, theta))
 
     #add ARTag (goal pos)
-    x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
-    y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
-    final_waypoint = (x2, y2, yaw)
-    transformed_waypoints.append(final_waypoint)
+    #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
+    #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
+    #final_waypoint = (x2, y2, yaw)
+   # transformed_waypoints.append(final_waypoint)
 
     plot_trajectory(transformed_waypoints)
 

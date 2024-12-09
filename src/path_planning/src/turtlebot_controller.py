@@ -26,7 +26,7 @@ class turtlebotController:
     # subscriber type is a path msg
 
     self.goal_path_sub = rospy.Subscriber("/trajectory", Path, self.planning_callback, queue_size= 10) #subscribe to Gustav's a* algo
-    self.goal_point_sub = rospy.Subscriber("goal_point", PointStamped, self.ar_tag_callback, queue_size= 10) 
+    #self.goal_point_sub = rospy.Subscriber("goal_point", PointStamped, self.ar_tag_callback, queue_size= 10) 
 
     self.path = None
     self.point = None
@@ -171,7 +171,8 @@ class turtlebotController:
         return
       
       if self.path is not None and self.goal_position is not None:
-        trajectory = plan_curved_trajectory(self.goal_position, self.path) #grab whe waypoints on goal path
+        #trajectory = plan_curved_trajectory(self.goal_position, self.path) #grab whe waypoints on goal path
+        trajectory = plan_curved_trajectory(self.path) #grab whe waypoints on goal path
         #instead of calculating the trajectory to the final point, input the waypoints given by a* and final ar_tag as the trajectory
         for waypoint in trajectory:
           self.controller(self, waypoint)
