@@ -21,7 +21,7 @@ class ARTagDetector:
         rospy.init_node('ar_tag_detector', anonymous=True)
 
         self.bridge = CvBridge()
-        self.test = self.test_pub
+
         self.cv_color_image = None
         self.cv_depth_image = None
 
@@ -45,10 +45,9 @@ class ARTagDetector:
 
         self.point_pub = rospy.Publisher("goal_point", PointStamped, queue_size=10)
         self.camera_point_pub = rospy.Publisher("camera_pixel_ar_tags", PointStamped, queue_size=10)
-        #include AR tag value
-        #rospy.sleep(1.0) 
-        rospy.Timer(rospy.Duration(1.0), self.test_pub)
-        #rospy.spin()
+        #include AR tag value 
+
+        rospy.spin()
 
     def camera_info_callback(self, msg):
         self.fx = msg.K[0]
@@ -77,6 +76,8 @@ class ARTagDetector:
             #if self.cv_depth_image is not None:
             rospy.loginfo(f"Error processing image")
 
+        except Exception as e:
+            print("Error:", e)
 
     #def depth_image_callback(self, msg):
     #    try:
@@ -90,8 +91,6 @@ class ARTagDetector:
         gray = cv2.cvtColor(self.cv_color_image, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = cv2.aruco.detectMarkers(gray, self.aruco_dict, parameters=self.aruco_params)
 
-        self.camera_point_pub.publish(PointStamped(header = Header(stamp=rospy.Time.now(), frame_id=str(0)), point = Point(180, 90, 0)))
-        self.camera_point_pub.publish(PointStamped(header = Header(stamp=rospy.Time.now(), frame_id=str(1)), point = Point(30, 26, 0)))
         if ids is None:
             rospy.loginfo("No AR tags detected")
             return
@@ -164,22 +163,6 @@ class ARTagDetector:
                 #print("TF Error: " + str(e))
                 print("TF Error: " + e)
                 return
-            
-    def test_pub(self, event):
-        rospy.loginfo("Published test")
-        point = PointStamped()
-        point.header.stamp = rospy.Time.now()
-        point.header.frame_id = str(0)
-        point.point.x = 180
-        point.point.y = 90
-        self.camera_point_pub.publish(point)
-        point.header.stamp = rospy.Time.now()
-        point.header.frame_id = str(1)
-        point.point.x = 30
-        point.point.y = 26
-        self.camera_point_pub.publish(point)
-        return
 
 if __name__ == '__main__':
     ARTagDetector()
-    rospy.spin()
