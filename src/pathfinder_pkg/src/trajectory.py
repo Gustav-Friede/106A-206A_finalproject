@@ -59,7 +59,7 @@ class TrajectoryPlanner:
 
         :param goal_msg: The PoseStamped message from the /goal_pose topic.
         """
-        if int(goal_msg.header.frame_id) == 0:
+        if int(goal_msg.header.frame_id) == "0": #  mario changed it from 0 to "0"
             rospy.loginfo("Received a goal pose.")
             self.goal_pose = goal_msg
         '''
@@ -73,7 +73,7 @@ class TrajectoryPlanner:
 
         :param goal_msg: The PoseStamped message from the /goal_pose topic.
         """
-        if int(end_msg.header.frame_id) == 1:
+        if int(end_msg.header.frame_id) == "1": # mario changed it from 1 to "1"
             rospy.loginfo("Received a end pose.")
             self.end_pose = end_msg
         '''

@@ -11,36 +11,45 @@ import cv2
 def create_occupancy_grid():
     # Load the binary maze image
     script_dir = os.path.dirname(__file__)
-    image_path = os.path.join(script_dir, '..', '..', '..',  'camera_calibration', 'calibrated_hsv_maze', 'sat_0.png')
-  # image_path = "/home/cc/ee106a/fa24/class/ee106a-acj/final_project/imgs/maze.png"  # Replace with the path to your maze image
+    image_path = os.path.join(script_dir,
+                              '..', '..',
+                              'computer_vision',
+                              'data',
+                              'camera_calibration',
+                               'sat_0.png')
+
     maze_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    maze_image = cv2.resize(maze_image, (int(maze_image.shape[1]/10),int(maze_image.shape[0]/10)), interpolation=cv2.INTER_NEAREST)
+    desired_size = 700
+    maze_image = cv2.resize(maze_image, (desired_size, desired_size), interpolation=cv2.INTER_NEAREST)
 
     # Process the image into a binary grid
     _, binary_grid = cv2.threshold(maze_image, 128, 255, cv2.THRESH_BINARY)
 
     # Convert binary grid to OccupancyGrid format (0 for free, 100 for occupied)
-    occupancy_data = np.where(binary_grid == 0, 100, 0)  # Black pixels -> 100, White pixels -> 0
-    occupancy_data = occupancy_data.flatten().tolist()  # Flatten 2D array to 1D list
+    occupancy_data = np.where(binary_grid == 0, 100, 0).flatten().tolist()
 
     # Define the OccupancyGrid message
     occupancy_grid = OccupancyGrid()
 
-    # Set the header
+
+    # resolution based on real-world dimensions:
+    #     #  board is 1.524 m on each side, and we have 700 pixels
+    #     # resolution = total_meters / total_pixels
+    resolution = 1.524 / desired_size
+
+    # Create the OccupancyGrid message
+    occupancy_grid = OccupancyGrid()
     occupancy_grid.header = Header()
     occupancy_grid.header.stamp = rospy.Time.now()
-    occupancy_grid.header.frame_id = "map"  # Frame of reference for the map
+    occupancy_grid.header.frame_id = "map"
 
-    # Set the map info
-    occupancy_grid.info.resolution = 1.0  # Each grid cell represents 1x1 meters
-    occupancy_grid.info.width = maze_image.shape[1]  # Number of columns in the grid
-    occupancy_grid.info.height = maze_image.shape[0]  # Number of rows in the grid
+    occupancy_grid.info.resolution = resolution
+    occupancy_grid.info.width = desired_size
+    occupancy_grid.info.height = desired_size
+    occupancy_grid.info.origin = Pose(Point(0.0, 0.0, 0.0),
+                                      Quaternion(0.0, 0.0, 0.0, 1.0))
 
-    # Set the origin of the map (bottom-left corner of the grid in the world frame)
-    occupancy_grid.info.origin = Pose(Point(0.0, 0.0, 0.0), Quaternion(0.0, 0.0, 0.0, 1.0))
-
-    # Assign the processed grid data
     occupancy_grid.data = occupancy_data
 
     return occupancy_grid
@@ -54,7 +63,7 @@ def occupancy_grid_publisher():
 
     # Publish the grid at a fixed rate
     rate = rospy.Rate(1)  # 1 Hz
-    rospy.loginfo("Publishing the Occupancy Grid...")
+    rospy.loginfo("Publishing the Occupancy Grid with scaling...")
 
     while not rospy.is_shutdown():
         occupancy_grid = create_occupancy_grid()  # Generate the OccupancyGrid

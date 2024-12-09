@@ -9,8 +9,8 @@ MAX_THRESH_VALUE = 255
 
 # read image
 script_dir = os.path.dirname(os.path.abspath(__file__))
-image_path = os.path.join(script_dir, '..', 'data', 'camera_calibration', 'calibrated_hsv_maze', 'sat_0.png')
-img = cv.imread(image_path, cv.IMREAD_REDUCED_GRAYSCALE_4)
+image_path = os.path.join(script_dir, '..', 'data', 'camera_calibration', 'hue_0.png')
+img = cv.imread(image_path, cv.IMREAD_REDUCED_GRAYSCALE_2)
 
 # extract edges and remove background
 edges = cv.Canny(img, MIN_THRESH_VALUE, MAX_THRESH_VALUE)
@@ -20,11 +20,11 @@ dlt = cv.dilate(edges, krn, iterations=5)
 res = 255 - cv.bitwise_and(dlt, img_wc)
 
 # pinpoint corners of the maze
-corners = cv.goodFeaturesToTrack(edges, 16,0.50, 50)
-corners = np.int0(corners)
-for corner in corners:
-    x, y = corner.ravel()
-    cv.circle(res, (int(x), int(y)), 5, 0, -1)
+# corners = cv.goodFeaturesToTrack(edges, 16,0.50, 50)
+# corners = np.int0(corners)
+# for corner in corners:
+#     x, y = corner.ravel()
+#     cv.circle(res, (int(x), int(y)), 5, 0, -1)
 
 image = cv.findContours(img_wc, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
