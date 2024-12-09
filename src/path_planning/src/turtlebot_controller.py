@@ -25,13 +25,14 @@ class turtlebotController:
     #rospy.Subscriber("goal_point", Point, planning_callback, queue_size=10) 
     # subscriber type is a path msg
 
-    self.goal_path_sub = rospy.Subscriber("goal_path", Path, self.planning_callback, queue_size= 10) #subscribe to Gustav's a* algo
+    self.goal_path_sub = rospy.Subscriber("/trajectory", Path, self.planning_callback, queue_size= 10) #subscribe to Gustav's a* algo
     self.goal_point_sub = rospy.Subscriber("goal_point", PointStamped, self.ar_tag_callback, queue_size= 10) 
 
     self.path = None
     self.point = None
     self.ar_tag_position = None
     self.ar_tag_id = None
+    self.goal_position = None
 
     rospy.spin()
 
@@ -142,9 +143,12 @@ class turtlebotController:
   #should we use a bezier curve or will that cause us to run into walls?
 
   def ar_tag_callback(self, msg):
-    if msg.tag_id == 0:
+    if msg.tag_id == 1:
       self.ar_tag_position = (msg.point.x, msg.point.y, msg.point.z)
-      print(f"AR Tag #0 position: {self.ar_tag_position}")
+      print(f"AR Tag #1 position: {self.ar_tag_position}")
+    elif msg.tag_id == 0:
+      self.goal_position = (msg.point.x, msg.point.y, msg.point.z)
+      print(f"AR Tag #0 position: {self.goal_position}")
     else:
       print(f"Found AR Tag {msg.tag_id}")
 
@@ -154,7 +158,7 @@ class turtlebotController:
       #trajectory = plan_curved_trajectory(msg.x, msg.y, msg.z) # TODO: What is the tuple input to this function? the target position, in this case the green cup
 
       #tuple_final_point = (msg.x, msg.y, msg.z)
-      if self.ar_tag_position is None:
+      if self.goal_position is None:
         print("AR tag position not yet found")
         return
 
@@ -166,8 +170,8 @@ class turtlebotController:
       else:
         return
       
-      if self.path is not None and self.ar_tag_position is not None:
-        trajectory = plan_curved_trajectory(self.ar_tag_position, self.path) #grab whe waypoints on goal path
+      if self.path is not None and self.goal_position is not None:
+        trajectory = plan_curved_trajectory(self.goal_position, self.path) #grab whe waypoints on goal path
         #instead of calculating the trajectory to the final point, input the waypoints given by a* and final ar_tag as the trajectory
         for waypoint in trajectory:
           self.controller(self, waypoint)

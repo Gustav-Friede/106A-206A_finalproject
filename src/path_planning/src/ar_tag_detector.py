@@ -43,6 +43,7 @@ class ARTagDetector:
         self.tf_listener = tf.TransformListener()  
 
         self.point_pub = rospy.Publisher("goal_point", PointStamped, queue_size=10)
+        self.camera_point_pub = rospy.Publisher("camera_pixel_ar_tags", PointStamped, queue_size=10)
         #include AR tag value 
 
         rospy.spin()
@@ -101,7 +102,24 @@ class ARTagDetector:
             tvec = tvecs[i][0]
             rvec = rvecs[i][0]
 
+            #for camera pixel points
+            marker_corners = corners[i][0]
+
+            #centers
+            u_pixel = np.mean(marker_corners[:, 0])
+            v_pixel = np.mean(marker_corners[:, 1])
+
+            pixel_point = PointStamped
+            pixel_point.header.stamp = rospy.Time.now()
+            pixel_point.header.frame_id = str(id_)
+
+            pixel_point.point.x = u_pixel
+            pixel_point.point.y = v_pixel
+            pixel_point.point.z = 0
             
+            pixel_point_x, pixel_point_y, pixel_point_z = pixel_point.point.x, pixel_point.point.y, pixel_point.point.z
+
+            self.camera_point_pub.publish(pixel_point)
             # Fetch the depth value at the center
             #depth = self.cv_depth_image[center_y, center_x]
 
