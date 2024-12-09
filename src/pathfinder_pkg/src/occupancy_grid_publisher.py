@@ -20,8 +20,18 @@ def create_occupancy_grid():
 
     maze_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
+    MIN_THRESH_VALUE = 120
+    MAX_THRESH_VALUE = 255
+
+    # extract edges and remove background
+    edges = cv2.Canny(maze_image, MIN_THRESH_VALUE, MAX_THRESH_VALUE)
+    img_wc = edges.copy()  # for visual purpose
+    krn = cv2.getStructuringElement(cv2.MORPH_RECT, (16, 16))
+    dlt = cv2.dilate(edges, krn, iterations=5)
+    res = 255 - cv2.bitwise_and(dlt, img_wc)
+
     desired_size = 700
-    maze_image = cv2.resize(maze_image, (desired_size, desired_size), interpolation=cv2.INTER_NEAREST)
+    maze_image = cv2.resize(res, (desired_size, desired_size), interpolation=cv2.INTER_NEAREST)
 
     # Process the image into a binary grid
     _, binary_grid = cv2.threshold(maze_image, 128, 255, cv2.THRESH_BINARY)
