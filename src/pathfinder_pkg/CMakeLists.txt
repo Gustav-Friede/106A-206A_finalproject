@@ -184,6 +184,11 @@ include_directories(
    src/trajectory.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
+ 
+  catkin_install_python(PROGRAMS
+   src/occupancy_grid_publisher.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

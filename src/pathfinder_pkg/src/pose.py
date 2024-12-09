@@ -10,7 +10,7 @@ def publish_goal_pose():
     goal_publisher = rospy.Publisher('/goal_pose', PoseStamped, queue_size=10)
     
     # Veröffentlichungsrate (1 Hz)
-    rate = rospy.Rate(0.1)
+    rate = rospy.Rate(1)
 
     rospy.loginfo("Goal pose publisher is running. Publishing to /goal_pose.")
 

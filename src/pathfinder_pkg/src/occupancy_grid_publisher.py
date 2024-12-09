@@ -9,7 +9,7 @@ import cv2
 
 def create_occupancy_grid():
     # Load the binary maze image
-    image_path = "maze.png"  # Replace with the path to your maze image
+    image_path = "/home/cc/ee106a/fa24/class/ee106a-acj/final_project/imgs/maze.png"  # Replace with the path to your maze image
     maze_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
     # Process the image into a binary grid

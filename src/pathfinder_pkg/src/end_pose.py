@@ -10,7 +10,7 @@ def publish_end_pose():
     end_publisher = rospy.Publisher('/end_pose', PoseStamped, queue_size=10)
     
     # Veröffentlichungsrate (1 Hz)
-    rate = rospy.Rate(0.1)
+    rate = rospy.Rate(1)
 
     rospy.loginfo("end pose publisher is running. Publishing to /end_pose.")
 
