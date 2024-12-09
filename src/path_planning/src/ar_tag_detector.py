@@ -66,22 +66,26 @@ class ARTagDetector:
     def color_image_callback(self, msg):
         try:
             # Convert the ROS Image message to an OpenCV image (BGR8 format)
-            #self.cv_color_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            self.cv_color_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            rospy.loginfo("Recieved image data")
 
+            cv2.imshow("Camera Feed", self.cv_color_image)
+            self.detect_process_ar_tags()
+        except Exception as e:
             # If we have both color and depth images, process them
             #if self.cv_depth_image is not None:
-            self.detect_process_ar_tags()
+            rospy.loginfo(f"Error processing image")
 
         except Exception as e:
             print("Error:", e)
 
-    def depth_image_callback(self, msg):
-        try:
+    #def depth_image_callback(self, msg):
+    #    try:
             # Convert the ROS Image message to an OpenCV image (16UC1 format)
-            self.cv_depth_image = self.bridge.imgmsg_to_cv2(msg, "16UC1")
+    #        self.cv_depth_image = self.bridge.imgmsg_to_cv2(msg, "16UC1")
 
-        except Exception as e:
-            print("Error:", e)
+    #    except Exception as e:
+    #        print("Error:", e)
 
     def detect_process_ar_tags(self):
         gray = cv2.cvtColor(self.cv_color_image, cv2.COLOR_BGR2GRAY)
@@ -91,6 +95,9 @@ class ARTagDetector:
             rospy.loginfo("No AR tags detected")
             return
         
+        #show tags
+        frame = cv2.aruco.drawDetectedMarkers(self.cv_color_image, corners, ids)
+        cv2.imshow('Detected AR Tags', frame)
         rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, self.marker_length, np.array([[self.fx, 0, self.cx],
                                                                                                       [0, self.fy, self.cy],
                                                                                                       [0, 0, 1]]), None)
