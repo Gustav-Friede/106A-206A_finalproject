@@ -18,6 +18,11 @@ class BirdsEyeViewNode:
         img_path = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', 'camera_snapshots',
                                 'snapshot_000.png')
         # img_path = os.path.join(script_dir, '..', '..', '..', 'imgs', 'birds-view-maze.jpg')
+        self.save_subdir = rospy.get_param('~save_subdir', 'calibrated_maze')
+        self.save_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', self.save_subdir)
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
+
         img = cv.imread(img_path)
         if img is None:
             raise FileNotFoundError("Image not found at the specified path.")
@@ -92,25 +97,50 @@ class BirdsEyeViewNode:
         rospy.loginfo("Homography matrix computed.")
 
         # output window screen size for the bird’s-eye view
-        self.output_size = (700, 680)  # width, height
+        self.output_size = (720, 720)  # width, height
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
+        self.latest_image = None
+        self.image_count = 0
 
         cv.namedWindow("Bird's-Eye View", cv.WINDOW_NORMAL)
         rospy.loginfo(f"BirdsEyeViewNode subscribed to: {self.image_topic}")
 
     def image_callback(self, msg):
-        print('image_callback triggered')
+       # print('image_callback triggered')
         cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
 
-
         birds_eye = cv.warpPerspective(cv_image, self.H, self.output_size)
+        latest_image = birds_eye.copy()
 
         cv.imshow("Bird's-Eye View", birds_eye)
         key = cv.waitKey(1) & 0xFF
-        if key == ord('q'):
+        if key == ord('S'):
+            if latest_image is not None:
+                filename = f"snapshot_{self.image_count:03d}.png"
+                filepath = os.path.join(self.save_dir, filename)
+                cv.imwrite(filepath, latest_image)
+                rospy.loginfo(f"Saved image: {filepath}")
+                self.image_count += 1
+            else:
+                rospy.logwarn("No image to save.")
+        if key == ord('Q'):
             rospy.signal_shutdown("User requested shutdown.")
+        # if key == ord('M'):
+        #
+        #
+        # def snap_image(self):
+        #
+        #     if self.latest_image is not None:
+        #         filename = f"snapshot_{self.image_count:03d}.png"
+        #         filepath = os.path.join(self.save_dir, filename)
+        #         cv.imwrite(filepath, self.latest_image)
+        #         rospy.loginfo(f"Saved image: {filepath}")
+        #         self.image_count += 1
+        #     else:
+        #         rospy.logwarn("No image to save.")
+        #
 
 if __name__ == "__main__":
     rospy.init_node('birds_eye_view_node', anonymous=True)
