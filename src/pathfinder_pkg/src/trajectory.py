@@ -1,6 +1,6 @@
 import rospy
 from nav_msgs.msg import OccupancyGrid, Path
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PointStamped, PoseStamped
 
 import sys
 import os
@@ -21,9 +21,9 @@ class TrajectoryPlanner:
         self.map_subscriber = rospy.Subscriber('/map', OccupancyGrid, self.map_callback)
 
         # Subscriber to the /goal_pose topic
-        self.goal_subscriber = rospy.Subscriber('/goal_pose', PoseStamped, self.goal_callback)
+        self.goal_subscriber = rospy.Subscriber('/camera_pixel_ar_tags', PointStamped, self.goal_callback)
 
-        self.end_subscriber = rospy.Subscriber('/end_pose', PoseStamped, self.end_callback)
+        self.end_subscriber = rospy.Subscriber('/camera_pixel_ar_tags', PointStamped, self.end_callback)
 
 
         # Publisher for the /trajectory topic
@@ -59,8 +59,9 @@ class TrajectoryPlanner:
 
         :param goal_msg: The PoseStamped message from the /goal_pose topic.
         """
-        rospy.loginfo("Received a goal pose.")
-        self.goal_pose = goal_msg
+        if int(goal_msg.header.frame_id) == 0:
+            rospy.loginfo("Received a goal pose.")
+            self.goal_pose = goal_msg
         '''
         if self.current_map:
             self.plan_and_publish_trajectory()
@@ -72,8 +73,9 @@ class TrajectoryPlanner:
 
         :param goal_msg: The PoseStamped message from the /goal_pose topic.
         """
-        rospy.loginfo("Received a end pose.")
-        self.end_pose = end_msg
+        if int(end_msg.header.frame_id) == 1:
+            rospy.loginfo("Received a end pose.")
+            self.end_pose = end_msg
         '''
         if self.current_map:
             self.plan_and_publish_trajectory()
@@ -138,8 +140,8 @@ class TrajectoryPlanner:
         path.header = map_msg.header
 
         # TODO: Replace with actual algorithm to generate the path
-        a_star.plot(map_msg,np.array([int(end_pose.pose.position.x),int(end_pose.pose.position.y)]),np.array([int(goal_pose.pose.position.x),int(goal_pose.pose.position.y)]))
-        way_points = a_star.a_star(map_msg,np.array([int(end_pose.pose.position.x),int(end_pose.pose.position.y)]),np.array([int(goal_pose.pose.position.x),int(goal_pose.pose.position.y)]))
+        a_star.plot(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
+        way_points = a_star.a_star(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         #print(way_points)
         if way_points is None:
     	    return path

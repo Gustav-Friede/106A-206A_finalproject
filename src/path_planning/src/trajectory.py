@@ -66,7 +66,7 @@ def generate_bezier_waypoints(x1, y1, theta1, x2, y2, theta2, offset=1.0, num_po
 
     return waypoints_with_theta
 
-def plan_curved_trajectory(final_position, algo_waypoints):
+def plan_curved_trajectory(algo_waypoints):
     #adds the final goal point to path and converts the values to base_footprint
     tfBuffer = tf2_ros.Buffer() 
     tfListener = tf2_ros.TransformListener(tfBuffer) 
