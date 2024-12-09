@@ -165,10 +165,10 @@ include_directories(
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
  
- catkin_install_python(PROGRAMS
-   src/trajectory.py
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
- )
+ #catkin_install_python(PROGRAMS
+  # src/trajectory.py
+   #DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ #)
  
  catkin_install_python(PROGRAMS
    src/turtlebot_controller.py

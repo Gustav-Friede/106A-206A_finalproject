@@ -5,7 +5,9 @@ import rospy
 import tf2_ros
 import tf
 import sys
+import os
 import numpy as np
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from geometry_msgs.msg import TransformStamped, PoseStamped, Twist, Point
 from tf.transformations import quaternion_from_euler
 from tf2_geometry_msgs import do_transform_pose
@@ -32,7 +34,8 @@ class turtlebotController:
     self.point = None
     self.ar_tag_position = None
     self.ar_tag_id = None
-    self.goal_position = None
+    #self.goal_position = None
+    self.goal_position = (1, 0, 0)
 
     rospy.spin()
 
@@ -175,7 +178,7 @@ class turtlebotController:
         trajectory = plan_curved_trajectory(self.path) #grab whe waypoints on goal path
         #instead of calculating the trajectory to the final point, input the waypoints given by a* and final ar_tag as the trajectory
         for waypoint in trajectory:
-          self.controller(self, waypoint)
+          self.controller(waypoint)
 
     except rospy.ROSInterruptException as e:
       print("Exception thrown in planning callback: " + e)
