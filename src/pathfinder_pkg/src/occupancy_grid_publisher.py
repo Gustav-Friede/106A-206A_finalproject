@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 
 import rospy
 from nav_msgs.msg import OccupancyGrid
@@ -9,7 +10,9 @@ import cv2
 
 def create_occupancy_grid():
     # Load the binary maze image
-    image_path = "/home/cc/ee106a/fa24/class/ee106a-acj/final_project/imgs/maze.png"  # Replace with the path to your maze image
+    script_dir = os.path.dirname(__file__)
+    image_path = os.path.join(script_dir, '..', '..', '..',  'camera_calibration', 'calibrated_maze', 'sat_0.png')
+  # image_path = "/home/cc/ee106a/fa24/class/ee106a-acj/final_project/imgs/maze.png"  # Replace with the path to your maze image
     maze_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
     maze_image = cv2.resize(maze_image, (int(maze_image.shape[1]/10),int(maze_image.shape[0]/10)), interpolation=cv2.INTER_NEAREST)

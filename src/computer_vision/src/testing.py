@@ -15,39 +15,6 @@ if img is None:
 
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 
-# define color ranges for the white tape (adjust as needed)
-sensitivity = 40
-lower_white = np.array([0, 0, 115])
-upper_white = np.array([90, 40, 255])
-mask = cv.inRange(hsv, lower_white, upper_white)
-
-# Morphological operations to clean up the mask
-kernel = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
-mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernel)
-mask = cv.morphologyEx(mask, cv.MORPH_OPEN, kernel)
-
-# Find contours in the mask
-contours, hierarchy = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-if not contours:
-    print("No contours found in the mask. Adjust the HSV ranges or lighting.")
-    exit(1)
-
-# Sort and approximate contours
-contours = sorted(contours, key=cv.contourArea, reverse=True)
-maze_contour = None
-for cnt in contours:
-    perimeter = cv.arcLength(cnt, True)
-    epsilon = 0.02 * perimeter
-    approx = cv.approxPolyDP(cnt, epsilon, True)
-    if len(approx) == 4:
-        maze_contour = approx
-        break
-
-if maze_contour is None:
-    print("No quadrilateral found. Try adjusting color ranges or epsilon.")
-    exit(1)
-
-
 
 # Convert from HSV back to BGR, then to RGB for correct Matplotlib display
 rgb_from_hsv = cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
@@ -90,6 +57,3 @@ plt.title('V Channel')
 
 plt.tight_layout()
 plt.show()
-
-print("Found corners (ordered):")
-print(ordered_corners)

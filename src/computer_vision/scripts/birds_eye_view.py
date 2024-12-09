@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import cv2
 import rospy
 import cv2 as cv
 import os
@@ -97,7 +98,7 @@ class BirdsEyeViewNode:
         rospy.loginfo("Homography matrix computed.")
 
         # output window screen size for the bird’s-eye view
-        self.output_size = (720, 720)  # width, height
+        self.output_size = (680, 680)  # width, height
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
@@ -118,9 +119,14 @@ class BirdsEyeViewNode:
         key = cv.waitKey(1) & 0xFF
         if key == ord('S'):
             if latest_image is not None:
-                filename = f"snapshot_{self.image_count:03d}.png"
+                filename = f"snapshot_{self.image_count:02d}.png"
                 filepath = os.path.join(self.save_dir, filename)
+
+                hue, saturation, value = cv2.split(cv2.cvtColor(latest_image, cv.COLOR_BGR2HSV))
                 cv.imwrite(filepath, latest_image)
+                cv.imwrite(os.path.join(self.save_dir, f"hue_{self.image_count:01d}.png"), hue)
+                cv.imwrite(os.path.join(self.save_dir, f"sat_{self.image_count:01d}.png"), saturation)
+                cv.imwrite(os.path.join(self.save_dir, f"value_{self.image_count:01d}.png"), value)
                 rospy.loginfo(f"Saved image: {filepath}")
                 self.image_count += 1
             else:
