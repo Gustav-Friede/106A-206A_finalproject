@@ -104,7 +104,7 @@ def plan_curved_trajectory(algo_waypoints):
         
         #for point in added_waypoints:
         #    transformed_waypoints.append(point)
-
+        
         if (i < len(algo_waypoints) - 1) and (i > 0):  # For intermediate waypoints
              next_x, next_y, _ = algo_waypoints[i + 1]
              prev_x, prev_y, _ = algo_waypoints[i - 1]
@@ -114,9 +114,27 @@ def plan_curved_trajectory(algo_waypoints):
         
              prev_x2 = prev_x * np.cos(yaw) - prev_y * np.sin(yaw) + x1
              prev_y2 = prev_x * np.sin(yaw) + prev_y * np.cos(yaw) + y1
+             
+             if not math.isclose(next_x2, prev_x2) and not math.isclose(next_y2, prev_y2):
+                 dir = np.array([x2, y2])-np.array([prev_x2, prev_y2])
+                 print(dir)
+                 if abs(dir[0])<0.1 and dir[1]>0:
+                     orientation = math.pi/2
+                     #print("test1")
+                 if abs(dir[0])<0.1 and dir[1]<0:
+                     orientation = -math.pi/2
+                     #print("test2")
+                 if abs(dir[1])<0.1 and dir[0]>0:
+                     orientation = 0
+                     #print("test3")
+                 if abs(dir[1])<0.1 and dir[0]<0:
+                     orientation = math.pi
+                     #print("test4")
+                 transformed_waypoints.append((prev_x2, prev_y2, orientation))
+                 #print("test")
 
-             orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
-             prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
+             #orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
+             #prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
 
         if (i == (len(algo_waypoints) - 1)):  # For intermediate waypoints
              next_x, next_y = x2, y2
@@ -128,17 +146,35 @@ def plan_curved_trajectory(algo_waypoints):
              prev_x2 = prev_x * np.cos(yaw) - prev_y * np.sin(yaw) + x1
              prev_y2 = prev_x * np.sin(yaw) + prev_y * np.cos(yaw) + y1
 
-             orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
-             prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
+             if not math.isclose(next_x2, prev_x2) and not math.isclose(next_y2, prev_y2):
+                 dir = np.array([x2, y2])-np.array([prev_x2, prev_y2])
+                 print(dir)
+                 if abs(dir[0])<0.1 and dir[1]>0:
+                     orientation = math.pi/2
+                     #print("test1")
+                 if abs(dir[0])<0.1 and dir[1]<0:
+                     orientation = -math.pi/2
+                     #print("test2")
+                 if abs(dir[1])<0.1 and dir[0]>0:
+                     orientation = 0
+                     #print("test3")
+                 if abs(dir[1])<0.1 and dir[0]<0:
+                     orientation = math.pi
+                     #print("test4")
+                 transformed_waypoints.append((prev_x2, prev_y2, orientation))
+                 #print("test")
 
-
+             #orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
+             #prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
+        
+        '''
         #if (next_x - x) > 0:
         #    transformed_waypoints.append((x2, y2, -np.pi/2))
         #if (next_x - x) < 0:
         #    transformed_waypoints.append((x2, y2, np.pi/2))
         print("Orientation: ", orientation)
         print("Previous Orientation: ", prev_orientation)
-
+        
         if orientation is not None and prev_orientation is not None and not math.isclose(prev_orientation, orientation):
             #transformed_waypoints.append((x2, y2, next_orientation))
             #current position
@@ -148,19 +184,18 @@ def plan_curved_trajectory(algo_waypoints):
          #   orientation = prev_orientation
         #prev_x2 = x2
         #prev_y2 = y2
+        '''
 
-
-        #end waypoint
+        #start waypoint
         if orientation is None:
-            orientation = prev_orientation
+            orientation = 0
         
         #start waypoint
-        if prev_orientation is None:
-            orientation = 0
-
+        prev_orientation = orientation
+        
         #transformed_waypoints.append((x2, y2, orientation))
         #next position
-        transformed_waypoints.append((x2, y2, orientation))
+        transformed_waypoints.append((x2, y2, prev_orientation))
 
     #add ARTag (goal pos)
     #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
