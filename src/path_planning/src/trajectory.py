@@ -74,7 +74,7 @@ def plan_curved_trajectory(algo_waypoints):
     while not rospy.is_shutdown():
         try:
             #trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
-            trans = tfBuffer.lookup_transform("map" , "base_footprint", rospy.Time(), rospy.Duration(5))
+            trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
             print(trans)
             break
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
@@ -90,9 +90,11 @@ def plan_curved_trajectory(algo_waypoints):
 
     transformed_waypoints = []
     orientation = None
+    prev_orientation = None
     
     for i in range(len(algo_waypoints)):
         x, y, theta = algo_waypoints[i]
+        print("Waypoint: ", x, y)
         
 #<<<<<<< HEAD CAITLINS CODE
         x2 = x * np.cos(yaw) - y * np.sin(yaw) + x1
@@ -103,29 +105,49 @@ def plan_curved_trajectory(algo_waypoints):
         #for point in added_waypoints:
         #    transformed_waypoints.append(point)
 
-        if i < len(algo_waypoints) - 2:  # For intermediate waypoints
+        if (i < len(algo_waypoints) - 1) and (i > 0):  # For intermediate waypoints
              next_x, next_y, _ = algo_waypoints[i + 1]
-             next2_x, next2_y, _ = algo_waypoints[i + 2]
-             orientation = math.atan2(next_y - y, next_x - x)
-             next_orientation = math.atan2(next2_y - next_y, next2_x - next_x)
+             prev_x, prev_y, _ = algo_waypoints[i - 1]
 
-             next_x2 = next_x * np.cos(yaw) - next_y  * np.sin(yaw) + x1
+             next_x2 = next_x * np.cos(yaw) - next_y * np.sin(yaw) + x1
              next_y2 = next_x * np.sin(yaw) + next_y * np.cos(yaw) + y1
+        
+             prev_x2 = prev_x * np.cos(yaw) - prev_y * np.sin(yaw) + x1
+             prev_y2 = prev_x * np.sin(yaw) + prev_y * np.cos(yaw) + y1
+
+             orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
+             prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
+
 
         #if (next_x - x) > 0:
         #    transformed_waypoints.append((x2, y2, -np.pi/2))
         #if (next_x - x) < 0:
         #    transformed_waypoints.append((x2, y2, np.pi/2))
         print("Orientation: ", orientation)
-        print("Next Orientation: ", next_orientation)
+        print("Previous Orientation: ", prev_orientation)
 
-        if next_orientation is not None and not math.isclose(next_orientation, orientation):
+        if orientation is not None and prev_orientation is not None and not math.isclose(prev_orientation, orientation):
             #transformed_waypoints.append((x2, y2, next_orientation))
-            transformed_waypoints.append((x2, y2, orientation))
-            orientation = next_orientation
+            #current position
+            transformed_waypoints.append((prev_x2, prev_y2, orientation))
+            #orientation = next_orientation
+        #elif (i > 0):
+         #   orientation = prev_orientation
+        #prev_x2 = x2
+        #prev_y2 = y2
+
+
+        #end waypoint
+        if orientation is None:
+            orientation = prev_orientation
+        
+        #start waypoint
+        if prev_orientation is None:
+            orientation = 0
 
         #transformed_waypoints.append((x2, y2, orientation))
-        transformed_waypoints.append((next_x2, next_y2, orientation))
+        #next position
+        transformed_waypoints.append((x2, y2, orientation))
 
     #add ARTag (goal pos)
     #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
@@ -160,10 +182,11 @@ def plan_curved_trajectory(algo_waypoints):
 #             if not (math.isclose(dx1, dx2) and math.isclose(dy1, dy2)):
 #                 turn_orientation = math.atan2(next_y - y, next_x - x)
 #                 transformed_waypoints.append((x_transformed, y_transformed, turn_orientation))
-
+    print("Transformed Waypoints: ", transformed_waypoints)
     # Plot the trajectory for visualization
     plot_trajectory(transformed_waypoints)
 
+    
     # Return the list of transformed waypoints
     return transformed_waypoints
 
