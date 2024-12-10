@@ -27,7 +27,7 @@ class TrajectoryPlanner:
 
 
         # Publisher for the /trajectory topic
-        self.trajectory_publisher = rospy.Publisher('/trajectory', Path, queue_size=10)
+        self.trajectory_publisher = rospy.Publisher('/grid_trajectory', Path, queue_size=10)
 
         # Internal storage for map and goal
         self.current_map = None
@@ -59,7 +59,7 @@ class TrajectoryPlanner:
 
         :param goal_msg: The PoseStamped message from the /goal_pose topic.
         """
-        if int(goal_msg.header.frame_id) == "0": #  mario changed it from 0 to "0"
+        if int(goal_msg.header.frame_id) == 0: #  mario changed it from 0 to "0"
             rospy.loginfo("Received a goal pose.")
             self.goal_pose = goal_msg
         '''
@@ -73,7 +73,7 @@ class TrajectoryPlanner:
 
         :param goal_msg: The PoseStamped message from the /goal_pose topic.
         """
-        if int(end_msg.header.frame_id) == "1": # mario changed it from 1 to "1"
+        if int(end_msg.header.frame_id) == 1: # mario changed it from 1 to "1"
             rospy.loginfo("Received a end pose.")
             self.end_pose = end_msg
         '''
@@ -93,13 +93,13 @@ class TrajectoryPlanner:
 
         # Publish the trajectory
         # Check if the new trajectory is different from the last published trajectory
-        if not self.trajectory_is_same(trajectory, self.last_published_path):
+        #if not self.trajectory_is_same(trajectory, self.last_published_path):
             # Publish the trajectory
-            self.trajectory_publisher.publish(trajectory)
-            rospy.loginfo("Published trajectory.")
+        self.trajectory_publisher.publish(trajectory)
+        rospy.loginfo("Published trajectory.")
 
             # Update the last published trajectory
-            self.last_published_path = trajectory
+        self.last_published_path = trajectory
 
         #rospy.sleep(5)        
         #input("Press Enter to plan and publish the next trajectory...")
@@ -140,7 +140,7 @@ class TrajectoryPlanner:
         path.header = map_msg.header
 
         # TODO: Replace with actual algorithm to generate the path
-        a_star.plot(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
+        #a_star.plot(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         way_points = a_star.a_star(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         #print(way_points)
         if way_points is None:
@@ -163,9 +163,9 @@ class TrajectoryPlanner:
         '''
         path2 = Path()
         
-        if path != path2:
-            path2 = path
-            return path
+        #if path != path2:
+        #    path2 = path
+        return path
 
 
 def main():

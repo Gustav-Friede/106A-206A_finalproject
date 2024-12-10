@@ -58,9 +58,9 @@ class turtlebotController:
 
     # All in the form [x, y]
   
-    Kp = np.diag([2, 0.8]) #TUNE
+    Kp = np.diag([0.8, 0.8]) #TUNE
     Kd = np.diag([-0.5, 0.5]) #TUNE
-    Ki = np.diag([0, 0])
+    Ki = np.diag([0.1, 0.1])
 
     prev_time = rospy.get_time() 
     integ = np.empty((2,), dtype = float) 

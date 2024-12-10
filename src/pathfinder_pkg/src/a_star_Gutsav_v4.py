@@ -121,9 +121,11 @@ def add_buffer(grid, buffer, start, end):
     
     rows = len(grid)
     columns = len(grid[0])
-
+    count = 0
     for i in range(rows):
         for j in range(columns):
+            print(count)
+            count = count + 1
             if grid[i][j].type > 51:    #if it's an obstacle
                 for di in range(-buffer, buffer + 1):
                     for dj in range(-buffer, buffer + 1):
@@ -131,6 +133,8 @@ def add_buffer(grid, buffer, start, end):
                         if ni >= 0 and nj >= 0 and nj < columns and ni < rows:    #check if the neighbor is in bounds and within the buffer distance
                             if grid[ni][nj] != start and grid[ni][nj] != end and grid[ni][nj].type != 100:    #avoid overwriting start, end, or 100
                                     grid[ni][nj].type = 51    #set psudo obstacle
+                                    #print(count)
+                                    #count = count + 1
                                     
     return grid
 
@@ -151,10 +155,12 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
 
     next_nodes.append(start)    #first node to examine
 
-    buffer = 2    #size of buffer zone
+    buffer = 25    #size of buffer zone
     grid = add_buffer(grid, buffer, start, end)    #add buffer zone
-    
+    count = 0
     while len(next_nodes) > 0:    #loop until all nodes are examined
+        print(count)
+        count = count + 1
 
         curr = min_end_dis(next_nodes)    #set the current node to the node of next_nodes that is closest to end
         next_nodes.remove(curr)
@@ -198,7 +204,7 @@ def plot(occupancy_grid_msg, start, end):
     start_node = grid[start[1]][start[0]]
     end_node = grid[end[1]][end[0]]
 
-    buffer = 2    #size of buffer zone
+    buffer = 25    #size of buffer zone
     grid = add_buffer(grid, buffer, start_node, end_node)    #add buffer zone
     
     plt.figure(dpi=300)
