@@ -123,7 +123,7 @@ class BirdsEyeViewNode:
 
         hue, saturation, value = cv.split(cv.cvtColor(latest_image, cv.COLOR_BGR2HSV))
 
-        cv.imshow("Bird's-Eye View", hue)
+        cv.imshow("Bird's-Eye View", value)
         key = cv.waitKey(1) & 0xFF
         if key == ord('S'):
             if latest_image is not None:
