@@ -5,7 +5,7 @@ camera_name: "usb_cam"
 video_device: "/dev/video0"
 
 # directory paths
-save_subdir: "camera_snapshots"
+save_subdir: ""
 
 # configuration/calibration for chAruco board
 aruco_dictionary: "DICT_6X6_250"

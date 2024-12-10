@@ -24,7 +24,8 @@ class PhotoSnapper:
         self.aruco_dict = getattr(cv.aruco, self.aruco_dict_name)
         script_dir = os.path.dirname(os.path.realpath(__file__))
         self.save_subdir = rospy.get_param('~save_subdir', 'camera_snapshots')
-        self.save_dir = os.path.join(script_dir, '..', '..', '..', 'camera_calibration', self.save_subdir)
+
+        self.save_dir = os.path.join(script_dir, '..', 'data', self.save_subdir)
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
