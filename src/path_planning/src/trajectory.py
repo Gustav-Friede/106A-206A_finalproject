@@ -118,6 +118,19 @@ def plan_curved_trajectory(algo_waypoints):
              orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
              prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
 
+        if (i == (len(algo_waypoints) - 1)):  # For intermediate waypoints
+             next_x, next_y = x2, y2
+             prev_x, prev_y, _ = algo_waypoints[i - 1]
+
+             next_x2 = next_x * np.cos(yaw) - next_y * np.sin(yaw) + x1
+             next_y2 = next_x * np.sin(yaw) + next_y * np.cos(yaw) + y1
+        
+             prev_x2 = prev_x * np.cos(yaw) - prev_y * np.sin(yaw) + x1
+             prev_y2 = prev_x * np.sin(yaw) + prev_y * np.cos(yaw) + y1
+
+             orientation = math.atan2(next_y2 - y2, next_x2 - x2)/2
+             prev_orientation = math.atan2(y2 - prev_y2, x2 - prev_x2)/2
+
 
         #if (next_x - x) > 0:
         #    transformed_waypoints.append((x2, y2, -np.pi/2))
