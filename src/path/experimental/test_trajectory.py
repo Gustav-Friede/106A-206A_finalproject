@@ -15,7 +15,7 @@ def generate_rectangle_path():
 
     # Define the rectangle corners
     points = [
-        (0, 0),    # Bottom-left corner
+        #(0, 0),    # Bottom-left corner
         (1, 0),  # Bottom-right corner
         (1, 1),  # Top-right corner
         (0, 1),  # Top-left corner
