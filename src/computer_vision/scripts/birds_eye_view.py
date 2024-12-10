@@ -103,7 +103,7 @@ class BirdsEyeViewNode:
         rospy.loginfo("Homography matrix computed.")
 
         # output window screen size for the bird’s-eye view
-        self.output_size = (680, 680)  # width, height
+        self.output_size = (700, 700)  # width, height
 
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
