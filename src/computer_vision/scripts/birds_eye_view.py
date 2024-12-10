@@ -21,12 +21,11 @@ class BirdsEyeViewNode:
                                 'data',
                                 'camera_snapshots',
                                 'snapshot_000.png')
+        self.save_subdir = rospy.get_param('~save_subdir', '')
+        self.save_dir = os.path.join(script_dir, '..', 'data', 'camera_calibration')
 
-        self.save_subdir = rospy.get_param('~save_subdir', 'calibrated_hsv_maze')
-        self.save_dir = os.path.join(script_dir,
-                                     '..',
-                                     'camera_calibration',
-                                     self.save_subdir)
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
 
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
