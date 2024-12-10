@@ -152,17 +152,6 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     end = grid[end_coor[1]][end_coor[0]]
 
     came_from = {}    #dictionary where keys are node coordinates and values is previous node
-    '''
-    x_dis = start.x - end.x
-    y_dis = start.y - end.y
-
-    if x_dis > y_dis:
-        came_from[str(start.x + 1) + ' ' + str(start.y)] = start
-        start = grid[start_coor[1]][start_coor[0] + 1]
-    elif x_dis < y_dis:
-        came_from[str(start.x) + ' ' + str(start.y + 1)] = start
-        start = grid[start_coor[1] + 1][start_coor[0]]
-    '''
     next_nodes = []    #list where nodes are added which are to be examined next
     examined_nodes = []    #list where nodes are added that which were examined
 
@@ -190,7 +179,14 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
 
         # Retrieve the previous node from came_from to get prev_dir
         key = f"{curr.x} {curr.y}"
-        prev_node = came_from[key]
+        if key in came_from:
+            prev_node = came_from[key]
+        else:
+            if abs(start.x - end.x) > abs(start.y - end.y):
+                prev_node = Node(start.x - 1, start.y)  #horizontal
+            elif abs(start.y - end.y) > abs(start.x - end.x):
+                prev_node = Node(start.x, start.y - 1)  #vertical
+
 
         for i in range(len(nei_nodes)):
             
