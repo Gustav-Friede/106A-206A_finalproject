@@ -72,8 +72,13 @@ def get_nei(grid, curr):
 
 #########################################################
 
-def dis_curr_nei(curr, nei_node):
+def dis_curr_nei(curr, nei_node, prev_node):
     dis = math.sqrt(((curr.x - nei_node.x)**2) + ((curr.y - nei_node.y)**2))    #distance between two nodes
+    if prev_node:
+        prev_dir = (curr.x - prev_node.x, curr.y - prev_node.y)
+        curr_dir = (nei_node.x - curr.x, nei_node.y - curr.y)
+        if curr_dir != prev_dir:
+            dis = dis + 1    #add penalty if direction changes
     return dis
 
 #########################################################
@@ -124,7 +129,7 @@ def add_buffer(grid, buffer, start, end):
     count = 0
     for i in range(rows):
         for j in range(columns):
-            print(count)
+            print(f'Adding buffer zone: {(count / (len(grid) * len(grid[0])))*100:.2f} %', end = '\r')            
             count = count + 1
             if grid[i][j].type > 51:    #if it's an obstacle
                 for di in range(-buffer, buffer + 1):
@@ -145,10 +150,21 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     grid = process_occupancy_grid(occupancy_grid_msg)
     start = grid[start_coor[1]][start_coor[0]]
     end = grid[end_coor[1]][end_coor[0]]
-    
+
+    came_from = {}    #dictionary where keys are node coordinates and values is previous node
+    '''
+    x_dis = start.x - end.x
+    y_dis = start.y - end.y
+
+    if x_dis > y_dis:
+        came_from[str(start.x + 1) + ' ' + str(start.y)] = start
+        start = grid[start_coor[1]][start_coor[0] + 1]
+    elif x_dis < y_dis:
+        came_from[str(start.x) + ' ' + str(start.y + 1)] = start
+        start = grid[start_coor[1] + 1][start_coor[0]]
+    '''
     next_nodes = []    #list where nodes are added which are to be examined next
     examined_nodes = []    #list where nodes are added that which were examined
-    came_from = {}    #dictionary where keys are node coordinates and values is previous node
 
     start.start_dis = 0    #distance to start node
     start.end_dis = dis_curr_end(start, end)    #distance to end node
@@ -159,7 +175,7 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     grid = add_buffer(grid, buffer, start, end)    #add buffer zone
     count = 0
     while len(next_nodes) > 0:    #loop until all nodes are examined
-        print(count)
+        print(f'Finding path, nodes examined: {(count / (len(grid) * len(grid[0])))*100:.2f} %', end = '\r')
         count = count + 1
 
         curr = min_end_dis(next_nodes)    #set the current node to the node of next_nodes that is closest to end
@@ -171,6 +187,10 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
             return path
 
         nei_nodes = get_nei(grid, curr)    #get neighbor nodes of current node
+
+        # Retrieve the previous node from came_from to get prev_dir
+        key = f"{curr.x} {curr.y}"
+        prev_node = came_from[key]
 
         for i in range(len(nei_nodes)):
             
@@ -184,7 +204,7 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
             if adj_node_1.type > 50 and adj_node_2.type > 50:    #do not examine diagonal neighbor node if both adjacent neighbor nodes are occupied
                 continue
 
-            start_dis_nei = curr.start_dis + dis_curr_nei(curr, nei_node)    #distance from neighbor node to start
+            start_dis_nei = curr.start_dis + dis_curr_nei(curr, nei_node, prev_node)    #distance from neighbor node to start
             if nei_node not in next_nodes:    #add nei_node to next_nodes
                 next_nodes.append(nei_node)
             elif start_dis_nei > nei_node.start_dis:    #do not examine node that moves us back to start
