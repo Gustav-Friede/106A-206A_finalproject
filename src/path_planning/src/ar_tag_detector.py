@@ -10,8 +10,10 @@ import matplotlib.pyplot as plt
 import os
 import time
 import tf
-from geometry_msgs.msg import Point, PointStamped
+from geometry_msgs.msg import Point, PointStamped, PoseStamped
 from std_msgs.msg import Header
+
+import tf.transformations as tf_trans
 
 
 PLOTS_DIR = os.path.join(os.getcwd(), 'plots')
@@ -45,6 +47,7 @@ class ARTagDetector:
 
         self.point_pub = rospy.Publisher("goal_point", PointStamped, queue_size=10)
         self.camera_point_pub = rospy.Publisher("camera_pixel_ar_tags", PointStamped, queue_size=10)
+        self.camera_pose_pub = rospy.Publisher("camera_pose_ar_tags", PoseStamped, queue_size=10)
         #include AR tag value 
 
         rospy.spin()
@@ -124,6 +127,29 @@ class ARTagDetector:
             pixel_point.point.x = u_pixel
             pixel_point.point.y = v_pixel
             pixel_point.point.z = 0
+
+            rotation_matrix, _ = cv2.Rodrigues(rvec)  
+            quaternion = tf_trans.quaternion_from_matrix(
+                [[rotation_matrix[0][0], rotation_matrix[0][1], rotation_matrix[0][2], 0],
+                [rotation_matrix[1][0], rotation_matrix[1][1], rotation_matrix[1][2], 0],
+                [rotation_matrix[2][0], rotation_matrix[2][1], rotation_matrix[2][2], 0],
+                [0, 0, 0, 1]]
+            )
+
+            pose = PoseStamped()
+            pose.header.stamp = rospy.Time.now()
+            pose.header.frame_id = str(id_)
+
+            pose.pose.position.x = tvec[0]
+            pose.pose.position.y = tvec[1]
+            pose.pose.position.z = tvec[2]
+
+            pose.pose.orientation.x = quaternion[0]
+            pose.pose.orientation.y = quaternion[1]
+            pose.pose.orientation.z = quaternion[2]
+            pose.pose.orientation.w = quaternion[3]
+
+            self.camera_pose_pub.publish(pose)
             
             pixel_point_x, pixel_point_y, pixel_point_z = pixel_point.point.x, pixel_point.point.y, pixel_point.point.z
 
