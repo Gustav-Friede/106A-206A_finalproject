@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped, Quaternion
 import numpy as np
 from tf.transformations import quaternion_matrix, quaternion_from_matrix
@@ -62,6 +63,7 @@ def transform_pose(pose_in):
     # Convert the combined rotation matrix back to quaternion
     transformed_quaternion = quaternion_from_matrix(np.vstack([np.hstack([combined_rotation_matrix, [[0], [0], [0]]]), [0, 0, 0, 1]]))
 
+    print(transformed_quaternion)
     # Create a new PoseStamped message
     pose_out = PoseStamped()
     pose_out.header = pose_in.header
@@ -75,30 +77,49 @@ def transform_pose(pose_in):
 
     return pose_out
 
-def callback(pose_in):
+def callback(odom_in):
     """
-    Callback function to transform incoming PoseStamped messages.
+    Callback function to transform incoming Odometry messages.
     """
+
+    def callback(odom_in):
+        rospy.loginfo("Callback triggered! Received message on /odom")
+
+
+    rospy.loginfo("Received Odometry: x: %f, y: %f, z: %f", 
+                  odom_in.pose.pose.position.x, 
+                  odom_in.pose.pose.position.y, 
+                  odom_in.pose.pose.position.z)
+    # Extract Pose from Odometry
+    pose_in = PoseStamped()
+    pose_in.header = odom_in.header
+    pose_in.pose = odom_in.pose.pose
+
     # Transform the pose
     pose_out = transform_pose(pose_in)
     
     # Log the transformed pose
-    rospy.loginfo("Transformed Pose: x: %f, y: %f, z: %f", 
+    rospy.loginfo("Transformed Odometry Pose: x: %f, y: %f, z: %f", 
                   pose_out.pose.position.x, 
                   pose_out.pose.position.y, 
                   pose_out.pose.position.z)
     
     # Publish the transformed pose
     pose_pub.publish(pose_out)
+    print(pose_out)
+    rospy.loginfo("Debugging: Your message here")
+    rospy.logwarn("Warning: Your message here")
+    rospy.logerr("Error: Your message here")
+
 
 def listener():
     """
-    Initializes the ROS node, subscribes to /input_pose, and publishes to /output_pose.
+    Initializes the ROS node, subscribes to /odom, and publishes transformed odometry to /output_pose.
     """
-    rospy.init_node('real_world_transformer', anonymous=True)
+    rospy.init_node('real_world_odometry_transformer', anonymous=True)
 
-    # Subscriber for input PoseStamped messages
-    rospy.Subscriber('/input_pose', PoseStamped, callback)
+    # Subscriber for input Odometry messages
+    rospy.Subscriber('/odom', Odometry, callback)
 
     # Publisher for transformed PoseStamped messages
     global pose_pub
