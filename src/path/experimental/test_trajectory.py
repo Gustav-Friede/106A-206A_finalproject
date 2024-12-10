@@ -15,20 +15,20 @@ def generate_rectangle_path():
 
     # Define the rectangle corners
     points = [
-        (0, 0, 0),    # Bottom-left corner
-        (1, 0, 0.5),  # Bottom-right corner
-        (1, 1, 5),  # Top-right corner
-       # (0, 5),  # Top-left corner
+        (0, 0),    # Bottom-left corner
+        (1, 0),  # Bottom-right corner
+        (1, 1),  # Top-right corner
+        (0, 1),  # Top-left corner
     ]
 
     # Create PoseStamped messages for each corner
-    for x, y, w in points:
+    for x, y in points:
         pose = PoseStamped()
         pose.header = path.header
         pose.pose.position.x = x
         pose.pose.position.y = y
         pose.pose.position.z = 0  # z-plane is fixed to 0
-        pose.pose.orientation.w = w  # No rotation (quaternion default)
+        pose.pose.orientation.w = 1  # No rotation (quaternion default)
 
         path.poses.append(pose)
 

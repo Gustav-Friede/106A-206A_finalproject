@@ -73,7 +73,8 @@ def plan_curved_trajectory(algo_waypoints):
 
     while not rospy.is_shutdown():
         try:
-            trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
+            #trans = tfBuffer.lookup_transform("odom" , "base_footprint", rospy.Time(), rospy.Duration(5))
+            trans = tfBuffer.lookup_transform("map" , "base_footprint", rospy.Time(), rospy.Duration(5))
             print(trans)
             break
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
@@ -88,20 +89,44 @@ def plan_curved_trajectory(algo_waypoints):
     #SETUP depending on turtlebot and which ar tag we use
 
     transformed_waypoints = []
-
+    orientation = None
+    
     for i in range(len(algo_waypoints)):
         x, y, theta = algo_waypoints[i]
-
+        
 #<<<<<<< HEAD CAITLINS CODE
         x2 = x * np.cos(yaw) - y * np.sin(yaw) + x1
         y2 = x * np.sin(yaw) + y * np.cos(yaw) + y1
 
-        added_waypoints = generate_bezier_waypoints(x1, y1, yaw, x2, y2, yaw, offset=0.2, num_points=10)
-
-        for point in added_waypoints:
-            transformed_waypoints.append(point)
+        #added_waypoints = generate_bezier_waypoints(x1, y1, yaw, x2, y2, yaw, offset=0.2, num_points=2)
         
-    
+        #for point in added_waypoints:
+        #    transformed_waypoints.append(point)
+
+        if i < len(algo_waypoints) - 2:  # For intermediate waypoints
+             next_x, next_y, _ = algo_waypoints[i + 1]
+             next2_x, next2_y, _ = algo_waypoints[i + 2]
+             orientation = math.atan2(next_y - y, next_x - x)
+             next_orientation = math.atan2(next2_y - next_y, next2_x - next_x)
+
+             next_x2 = next_x * np.cos(yaw) - next_y  * np.sin(yaw) + x1
+             next_y2 = next_x * np.sin(yaw) + next_y * np.cos(yaw) + y1
+
+        #if (next_x - x) > 0:
+        #    transformed_waypoints.append((x2, y2, -np.pi/2))
+        #if (next_x - x) < 0:
+        #    transformed_waypoints.append((x2, y2, np.pi/2))
+        print("Orientation: ", orientation)
+        print("Next Orientation: ", next_orientation)
+
+        if next_orientation is not None and not math.isclose(next_orientation, orientation):
+            #transformed_waypoints.append((x2, y2, next_orientation))
+            transformed_waypoints.append((x2, y2, orientation))
+            orientation = next_orientation
+
+        #transformed_waypoints.append((x2, y2, orientation))
+        transformed_waypoints.append((next_x2, next_y2, orientation))
+
     #add ARTag (goal pos)
     #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
     #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
@@ -109,32 +134,32 @@ def plan_curved_trajectory(algo_waypoints):
    # transformed_waypoints.append(final_waypoint)
 
 #======= GUSTAVS CODE
-        x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
-        y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
+#         x_transformed = x * np.cos(yaw) - y * np.sin(yaw) + x1
+#         y_transformed = x * np.sin(yaw) + y * np.cos(yaw) + y1
         
-        if i < len(algo_waypoints) - 1:  # For intermediate waypoints
-            next_x, next_y, _ = algo_waypoints[i + 1]
-            orientation = math.atan2(next_y - y, next_x - x)
-        else:  # For the last waypoint
-            prev_x, prev_y, _ = algo_waypoints[i - 1]
-            orientation = math.atan2(y - prev_y, x - prev_x)
+#         if i < len(algo_waypoints) - 1:  # For intermediate waypoints
+#             next_x, next_y, _ = algo_waypoints[i + 1]
+#             orientation = math.atan2(next_y - y, next_x - x)
+#         else:  # For the last waypoint
+#             prev_x, prev_y, _ = algo_waypoints[i - 1]
+#             orientation = math.atan2(y - prev_y, x - prev_x)
 
-        # Append the transformed waypoint
-        transformed_waypoints.append((x_transformed, y_transformed, orientation))
+#         # Append the transformed waypoint
+#         transformed_waypoints.append((x_transformed, y_transformed, orientation))
 
-        # Detect and handle turns
-        if i > 0 and i < len(algo_waypoints) - 1:
-            prev_x, prev_y, _ = algo_waypoints[i - 1]
-            next_x, next_y, _ = algo_waypoints[i + 1]
-#>>>>>>> 955bfc2bf9dfb5d68ae692874b479a9a54cec2e4
+#         # Detect and handle turns
+#         if i > 0 and i < len(algo_waypoints) - 1:
+#             prev_x, prev_y, _ = algo_waypoints[i - 1]
+#             next_x, next_y, _ = algo_waypoints[i + 1]
+# #>>>>>>> 955bfc2bf9dfb5d68ae692874b479a9a54cec2e4
 
-            dx1, dy1 = x - prev_x, y - prev_y
-            dx2, dy2 = next_x - x, next_y - y
+#             dx1, dy1 = x - prev_x, y - prev_y
+#             dx2, dy2 = next_x - x, next_y - y
 
-            # If there's a turn, add a waypoint to change orientation in place
-            if not (math.isclose(dx1, dx2) and math.isclose(dy1, dy2)):
-                turn_orientation = math.atan2(next_y - y, next_x - x)
-                transformed_waypoints.append((x_transformed, y_transformed, turn_orientation))
+#             # If there's a turn, add a waypoint to change orientation in place
+#             if not (math.isclose(dx1, dx2) and math.isclose(dy1, dy2)):
+#                 turn_orientation = math.atan2(next_y - y, next_x - x)
+#                 transformed_waypoints.append((x_transformed, y_transformed, turn_orientation))
 
     # Plot the trajectory for visualization
     plot_trajectory(transformed_waypoints)
@@ -150,7 +175,7 @@ def wayp(x, y, next_x, next_y):
 
 if __name__ == '__main__':
     rospy.init_node('turtlebot_controller', anonymous=True)
-    trajectory = generate_bezier_waypoints(0.0, 0.0, np.pi/2, 0.2, 0.2, np.pi/2, offset=0.2, num_points=100)
+    #trajectory = generate_bezier_waypoints(0.0, 0.0, np.pi/2, 0.2, 0.2, np.pi/2, offset=0.2, num_points=100)
 
 
-    plot_trajectory(trajectory)
+    #plot_trajectory(trajectory)
