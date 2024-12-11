@@ -4,7 +4,7 @@ import cv2 as cv
 import numpy as np
 from matplotlib import pyplot as plt
 
-MIN_THRESH_VALUE = 120
+MIN_THRESH_VALUE = 80
 MAX_THRESH_VALUE = 255
 
 # read image
@@ -28,6 +28,10 @@ res = 255 - cv.bitwise_and(dlt, img_wc)
 
 image = cv.findContours(img_wc, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
+output_path = os.path.join(script_dir, '..', 'data', 'camera_calibration', 'reduced_maze.png')
+cv.imwrite(output_path, res)
+
+
 # display original and edge-detected images
 plt.figure(figsize=(10, 5))
 #
@@ -40,7 +44,7 @@ plt.title('Original Image')
 # edge Image
 plt.subplot(1, 2, 2)  # 1 row, 2 columns, 2nd subplot
 plt.imshow(res, cmap='gray')
-plt.title('Edge and Corners')
+plt.title('Extracted Maze')
 #plt.xticks([]), plt.yticks([])
 
 plt.tight_layout()
