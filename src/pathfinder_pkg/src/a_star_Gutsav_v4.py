@@ -5,6 +5,11 @@ from nav_msgs.msg import OccupancyGrid
 
 #########################################################
 
+#global parameter
+buffer = 25    #size of buffer zone
+
+#########################################################
+
 class Node:
     def __init__(self, x, y):
         self.x = x
@@ -160,7 +165,6 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
 
     next_nodes.append(start)    #first node to examine
 
-    buffer = 25    #size of buffer zone
     grid = add_buffer(grid, buffer, start, end)    #add buffer zone
     count = 0
     while len(next_nodes) > 0:    #loop until all nodes are examined
@@ -220,7 +224,6 @@ def plot(occupancy_grid_msg, start, end):
     start_node = grid[start[1]][start[0]]
     end_node = grid[end[1]][end[0]]
 
-    buffer = 25    #size of buffer zone
     grid = add_buffer(grid, buffer, start_node, end_node)    #add buffer zone
     
     plt.figure(dpi=300)
