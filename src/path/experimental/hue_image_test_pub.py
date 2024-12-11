@@ -16,7 +16,7 @@ def publish_static_image():
     bridge = CvBridge()
 
     # 4. Lade das Bild (Pfad anpassen)
-    image_path = "/home/cc/ee106a/fa24/class/ee106a-acj/final_project/imgs/test_maze350.jpg"  # Ersetze dies durch den Pfad zu deinem Bild
+    image_path = "/home/cc/ee106a/fa24/class/ee106a-acj/final_project/imgs/reduced_maze.png"  # Ersetze dies durch den Pfad zu deinem Bild
     img = cv2.imread(image_path)
 
     if img is None:

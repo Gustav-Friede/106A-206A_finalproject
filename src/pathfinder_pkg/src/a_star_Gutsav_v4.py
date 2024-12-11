@@ -6,12 +6,12 @@ from nav_msgs.msg import OccupancyGrid
 #########################################################
 
 #global parameter
-buffer = 25    #size of buffer zone
+buffer = 0    #size of buffer zone
 
 #########################################################
 
 class Node:
-    def __init__(self, x, y):
+    def __init__(self, y, x):
         self.x = x
         self.y = y
         self.type = 100    #types: 0-100 [int] (from occupancy grid)
@@ -248,7 +248,7 @@ def plot(occupancy_grid_msg, start, end):
 
     plt.axis('equal')
     
-    plt.show(block=True)
+    plt.show()
     
     path1 = a_star(occupancy_grid_msg, start, end)
     
