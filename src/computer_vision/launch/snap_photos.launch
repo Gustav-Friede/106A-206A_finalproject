@@ -1,4 +1,11 @@
 <launch>
+  <!-- Starte den usb_cam Node -->
+    <node pkg="usb_cam" type="usb_cam_node" name="usb_cam" output="screen">
+        <!-- Übergebe die Parameter für das Video-Gerät und den Kameranamen -->
+        <param name="video_device" value="/dev/video0"/>
+        <param name="camera_name" value="usb_cam"/>
+    </node>
+  
   <!-- Load parameters from YAML -->
   <rosparam file="$(find computer_vision)/config/snap_photos.yaml" command="load"/>
 
