@@ -1,14 +1,11 @@
-Setup commands
+# launch calibration
+  roslaunch computer_vision snap_photos.launch
 
-# Initial Setup:
+# launch normal birds eye camera feed
+  rosrun computer_vision birds_eye_view.py
+  rosrun usb_cam usb_cam_node _video_device:=/dev/video0 _camera_name:=usb_cam
 
-  # Capture images using snap_photos (for camera calibration using chAruco board)
-    roslaunch computer_vision snap_photos.launch
-
-  # Run the marker calibration to ensure accurary
-    rosrun computer_vision marker_calibrate.py
-
-
-  # Display bird's eye view camera feed after calibration finishes
-    rosun computer_vision birds_eye_view.py
+# launch hsv camera feed
+  rosrun computer_vision hsv_camera_feed.py
+  rosrun usb_cam usb_cam_node _video_device:=/dev/video0 _camera_name:=usb_cam
 
