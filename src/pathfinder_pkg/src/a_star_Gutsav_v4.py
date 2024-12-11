@@ -55,7 +55,6 @@ def min_end_dis(next_nodes):
 #########################################################
 
 def get_nei(grid, curr):
-    print("ping")
     rows = len(grid)    #determine number of rows
     columns = len(grid[0])    #determine number of columns
     #add diagonal movement if allowed
@@ -67,8 +66,8 @@ def get_nei(grid, curr):
         
         direc_j = direc[j,:]
         
-        nei_x = curr.x + direc_j[0]
-        nei_y = curr.y + direc_j[1]
+        nei_x = curr.x + direc_j[1]
+        nei_y = curr.y + direc_j[0]
 
         if nei_x >= 0 and nei_y >= 0 and nei_x < columns and nei_y < rows:    #adds neighbor for every direction if in domain
             nei_nodes.append(grid[nei_y][nei_x])
@@ -194,12 +193,12 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     start.end_dis = dis_curr_end(start, end)    #distance to end node
 
     next_nodes.append(start)    #first node to examine
-
+    print("next nodes:",next_nodes)
     grid = add_buffer(grid, buffer, start, end)    #add buffer zone
     grid = free_se(grid, buffer, start, end)
     count = 0
     while len(next_nodes) > 0:    #loop until all nodes are examined
-        print(f'Finding path, nodes examined: {(count / (len(grid) * len(grid[0])))*100:.2f} %', end = '\r')
+        print(f'Finding path, nodes examined: {(count / (len(grid) * len(grid[0])))*100:.2f} %')#, end = '\r')
         count = count + 1
 
         curr = min_end_dis(next_nodes)    #set the current node to the node of next_nodes that is closest to end
