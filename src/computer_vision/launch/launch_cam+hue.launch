@@ -9,5 +9,8 @@
     <!-- Starte den hsv_camera_feed Node -->
     <node pkg="computer_vision" type="hsv_camera_feed.py" name="birds_eye_view_node" output="screen">
     </node>
+
+    <node pkg="path_planning" type="ar_tag_detector.py" name="ar_tag_detector" output="screen">
+    </node>
 </launch>
 

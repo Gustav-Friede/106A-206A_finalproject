@@ -6,7 +6,7 @@ from nav_msgs.msg import OccupancyGrid
 #########################################################
 
 #global parameter
-buffer = 25    #size of buffer zone
+buffer = 28    #size of buffer zone
 
 #########################################################
 
@@ -162,7 +162,7 @@ def add_walls(grid):
 #########################################################
 
 def free_se(grid, buffer, start, end):
-    buffer = buffer+25
+    buffer = buffer*2
     rows = len(grid)
     columns = len(grid[0])
     for i in range(rows):
