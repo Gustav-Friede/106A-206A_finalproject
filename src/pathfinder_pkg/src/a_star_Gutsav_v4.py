@@ -6,7 +6,7 @@ from nav_msgs.msg import OccupancyGrid
 #########################################################
 
 #global parameter
-buffer = 25    #size of buffer zone
+buffer = 20    #size of buffer zone
 
 #########################################################
 
@@ -55,7 +55,6 @@ def min_end_dis(next_nodes):
 #########################################################
 
 def get_nei(grid, curr):
-    
     rows = len(grid)    #determine number of rows
     columns = len(grid[0])    #determine number of columns
     #add diagonal movement if allowed
@@ -67,8 +66,8 @@ def get_nei(grid, curr):
         
         direc_j = direc[j,:]
         
-        nei_x = curr.x + direc_j[0]
-        nei_y = curr.y + direc_j[1]
+        nei_x = curr.x + direc_j[1]
+        nei_y = curr.y + direc_j[0]
 
         if nei_x >= 0 and nei_y >= 0 and nei_x < columns and nei_y < rows:    #adds neighbor for every direction if in domain
             nei_nodes.append(grid[nei_y][nei_x])
@@ -150,11 +149,41 @@ def add_buffer(grid, buffer, start, end):
 
 #########################################################
 
+def add_walls(grid):
+    for i in range(len(grid)):
+        grid[0][i].type = 100
+        grid[i][0].type = 100
+        grid[len(grid)-1][i].type = 100
+        grid[i][len(grid[0])-1].type = 100
+
+    return grid
+
+
+#########################################################
+
+def free_se(grid, buffer, start, end):
+    
+    rows = len(grid)
+    columns = len(grid[0])
+    for i in range(rows):
+        for j in range(columns):
+            if grid[i][j] == start or grid[i][j] == end:    #if start or end
+                for di in range(-buffer, buffer + 1):
+                    for dj in range(-buffer, buffer + 1):
+                        ni, nj = i + di, j + dj
+                        if ni >= 0 and nj >= 0 and nj < columns and ni < rows:    #check if the neighbor is in bounds and within the buffer distance
+                            grid[ni][nj].type = 0    #free start and end
+
+    return grid
+
+#########################################################
+
 def a_star(occupancy_grid_msg, start_coor, end_coor):
 
     grid = process_occupancy_grid(occupancy_grid_msg)
-    start = grid[start_coor[1]][start_coor[0]]
-    end = grid[end_coor[1]][end_coor[0]]
+    grid = add_walls(grid)
+    start = grid[start_coor[0]][start_coor[1]]
+    end = grid[end_coor[0]][end_coor[1]]
 
     came_from = {}    #dictionary where keys are node coordinates and values is previous node
     next_nodes = []    #list where nodes are added which are to be examined next
@@ -164,8 +193,9 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
     start.end_dis = dis_curr_end(start, end)    #distance to end node
 
     next_nodes.append(start)    #first node to examine
-
+    #print("next nodes:",next_nodes)
     grid = add_buffer(grid, buffer, start, end)    #add buffer zone
+    grid = free_se(grid, buffer, start, end)
     count = 0
     while len(next_nodes) > 0:    #loop until all nodes are examined
         print(f'Finding path, nodes examined: {(count / (len(grid) * len(grid[0])))*100:.2f} %', end = '\r')
@@ -180,7 +210,7 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
             return path
 
         nei_nodes = get_nei(grid, curr)    #get neighbor nodes of current node
-
+        print('nei_nodes: ', nei_nodes[0].type)
         # Retrieve the previous node from came_from to get prev_dir
         key = f"{curr.x} {curr.y}"
         if key in came_from:
@@ -221,10 +251,13 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
 def plot(occupancy_grid_msg, start, end):
 
     grid = process_occupancy_grid(occupancy_grid_msg)
-    start_node = grid[start[1]][start[0]]
-    end_node = grid[end[1]][end[0]]
+    grid = add_walls(grid)
+    start_node = grid[start[0]][start[1]]
+    end_node = grid[end[0]][end[1]]
 
     grid = add_buffer(grid, buffer, start_node, end_node)    #add buffer zone
+    grid = free_se(grid, buffer, start_node, end_node)
+
     
     plt.figure(dpi=300)
     plt.title('Occupancy Grid')
