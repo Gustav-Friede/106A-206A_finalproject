@@ -6,7 +6,7 @@ from nav_msgs.msg import OccupancyGrid
 #########################################################
 
 #global parameter
-buffer = 20    #size of buffer zone
+buffer = 25    #size of buffer zone
 
 #########################################################
 
@@ -70,7 +70,7 @@ def get_nei(grid, curr):
         nei_y = curr.y + direc_j[0]
 
         if nei_x >= 0 and nei_y >= 0 and nei_x < columns and nei_y < rows:    #adds neighbor for every direction if in domain
-            nei_nodes.append(grid[nei_y][nei_x])
+            nei_nodes.append(grid[nei_x][nei_y])
 
     return nei_nodes
 
@@ -162,7 +162,7 @@ def add_walls(grid):
 #########################################################
 
 def free_se(grid, buffer, start, end):
-    
+    buffer = buffer+25
     rows = len(grid)
     columns = len(grid[0])
     for i in range(rows):
@@ -182,9 +182,10 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
 
     grid = process_occupancy_grid(occupancy_grid_msg)
     grid = add_walls(grid)
-    start = grid[start_coor[0]][start_coor[1]]
-    end = grid[end_coor[0]][end_coor[1]]
-
+    start = grid[start_coor[1]][start_coor[0]]
+    end = grid[end_coor[1]][end_coor[0]]
+    #print("start",start.x, start.y)
+    #print("end",end.x, end.y)
     came_from = {}    #dictionary where keys are node coordinates and values is previous node
     next_nodes = []    #list where nodes are added which are to be examined next
     examined_nodes = []    #list where nodes are added that which were examined
@@ -210,7 +211,7 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
             return path
 
         nei_nodes = get_nei(grid, curr)    #get neighbor nodes of current node
-        print('nei_nodes: ', nei_nodes[0].type)
+
         # Retrieve the previous node from came_from to get prev_dir
         key = f"{curr.x} {curr.y}"
         if key in came_from:
@@ -225,18 +226,22 @@ def a_star(occupancy_grid_msg, start_coor, end_coor):
         for i in range(len(nei_nodes)):
             
             nei_node = nei_nodes[i]    #neighbor node i
+            #print('nei_node.x, y', nei_node.x, nei_node.y)
+            #print('nei_nodes: ', nei_node.type)
 
             if nei_node in examined_nodes or nei_node.type > 50:    #do not examine node that are already examined or occupied
                 continue
 
-            adj_node_1 = grid[curr.y][nei_node.x]
-            adj_node_2 = grid[nei_node.y][curr.x]
-            if adj_node_1.type > 50 and adj_node_2.type > 50:    #do not examine diagonal neighbor node if both adjacent neighbor nodes are occupied
-                continue
+            #adj_node_1 = grid[curr.y][nei_node.x]
+            #adj_node_2 = grid[nei_node.y][curr.x]
+            #if adj_node_1.type > 50 and adj_node_2.type > 50:    #do not examine diagonal neighbor node if both adjacent neighbor nodes are occupied
+            #    print('adj')
+            #    continue
 
             start_dis_nei = curr.start_dis + dis_curr_nei(curr, nei_node, prev_node)    #distance from neighbor node to start
             if nei_node not in next_nodes:    #add nei_node to next_nodes
                 next_nodes.append(nei_node)
+                #print('append')
             elif start_dis_nei > nei_node.start_dis:    #do not examine node that moves us back to start
                 continue
 
@@ -252,9 +257,10 @@ def plot(occupancy_grid_msg, start, end):
 
     grid = process_occupancy_grid(occupancy_grid_msg)
     grid = add_walls(grid)
-    start_node = grid[start[0]][start[1]]
-    end_node = grid[end[0]][end[1]]
-
+    start_node = grid[start[1]][start[0]]
+    end_node = grid[end[1]][end[0]]
+    #print("end",start_node.x, start_node.y)
+    #print("end",end_node.x, end_node.y)
     grid = add_buffer(grid, buffer, start_node, end_node)    #add buffer zone
     grid = free_se(grid, buffer, start_node, end_node)
 

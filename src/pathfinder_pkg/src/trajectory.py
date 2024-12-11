@@ -140,7 +140,7 @@ class TrajectoryPlanner:
         path.header = map_msg.header
 
         # TODO: Replace with actual algorithm to generate the path
-        a_star.plot(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
+        #a_star.plot(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         way_points = a_star.a_star(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         #print(way_points)
         if way_points is None:

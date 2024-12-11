@@ -15,6 +15,8 @@ from std_msgs.msg import Header
 
 import tf.transformations as tf_trans
 
+#detected_tag_0 = False
+#detected_tag_1 = False
 
 PLOTS_DIR = os.path.join(os.getcwd(), 'plots')
 
@@ -28,7 +30,8 @@ class ARTagDetector:
         self.cv_depth_image = None
 
         #for logitech camera
-        self.color_image_sub = rospy.Subscriber("/usb_cam/image_raw", Image, self.color_image_callback)
+        #self.color_image_sub = rospy.Subscriber("/usb_cam/image_raw", Image, self.color_image_callback)
+        self.color_image_sub = rospy.Subscriber("raw_birds_eye_image", Image, self.color_image_callback)
         #self.depth_image_sub = rospy.Subscriber("/camera/aligned_depth_to_color/image_raw", Image, self.depth_image_callback)
         self.camera_info_sub = rospy.Subscriber("/usb_cam/camera_info", CameraInfo, self.camera_info_callback)
 
@@ -36,7 +39,8 @@ class ARTagDetector:
         self.fy = None
         self.cx = None
         self.cy = None
-
+        self.detected_tag_0 = False
+        self.detected_tag_1 = False
         # Load the ArUco dictionary
         self.aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
         self.aruco_params = cv2.aruco.DetectorParameters_create()
@@ -46,10 +50,11 @@ class ARTagDetector:
         self.tf_listener = tf.TransformListener()  
 
         self.point_pub = rospy.Publisher("goal_point", PointStamped, queue_size=10)
-        self.camera_point_pub = rospy.Publisher("camera_pixel_ar_tags", PointStamped, queue_size=10)
+        self.camera_point_pub = rospy.Publisher("camera_pixel_ar_tags", PointStamped, queue_size=1)
         self.camera_pose_pub = rospy.Publisher("camera_pose_ar_tags", PoseStamped, queue_size=10)
         #include AR tag value 
-
+        #rate = rospy.Rate(1)
+        #rospy.sleep(1)
         rospy.spin()
 
     def camera_info_callback(self, msg):
@@ -74,21 +79,24 @@ class ARTagDetector:
 
             cv2.imshow("Camera Feed", self.cv_color_image)
             self.detect_process_ar_tags()
-        except Exception as e:
+        #except Exception as e:
             # If we have both color and depth images, process them
             #if self.cv_depth_image is not None:
-            rospy.loginfo(f"Error processing image")
+         #   rospy.loginfo(f"Error processing image")
 
-        except Exception as e:
-            print("Error:", e)
+        #except Exception as e:
+         #   print("Error:", e)
 
     #def depth_image_callback(self, msg):
     #    try:
             # Convert the ROS Image message to an OpenCV image (16UC1 format)
     #        self.cv_depth_image = self.bridge.imgmsg_to_cv2(msg, "16UC1")
 
-    #    except Exception as e:
-    #        print("Error:", e)
+        except Exception as e:
+            print("Error:", e)
+
+    #detected_tag_0 = False
+    #detected_tag_1 = False
 
     def detect_process_ar_tags(self):
         gray = cv2.cvtColor(self.cv_color_image, cv2.COLOR_BGR2GRAY)
@@ -104,11 +112,19 @@ class ARTagDetector:
         rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, self.marker_length, np.array([[self.fx, 0, self.cx],
                                                                                                       [0, self.fy, self.cy],
                                                                                                       [0, 0, 1]]), None)
-
+        #print('IDs:', ids)
         #find center for each of the tags
         for i, id_ in enumerate(ids.flatten()):
+            #print('i', i)
             #center_x = int(np.mean(corners[i][0][:, 0]))
             #center_y = int(np.mean(corners[i][0][:, 1]))
+
+            #if (id_ == [0]) and self.detected_tag_0:
+            #    print('0 already detected')
+            #    continue
+            #if (id_ == [1]) and self.detected_tag_1:
+            #    print('1 already detected')
+            #    continue
 
             tvec = tvecs[i][0]
             rvec = rvecs[i][0]
@@ -124,9 +140,20 @@ class ARTagDetector:
             pixel_point.header.stamp = rospy.Time.now()
             pixel_point.header.frame_id = str(id_)
 
-            pixel_point.point.x = u_pixel
-            pixel_point.point.y = v_pixel
+            pixel_point.point.x = int(u_pixel/(680/350))
+            pixel_point.point.y = int(v_pixel/(680/350))
             pixel_point.point.z = 0
+            
+            if id_ == [0]:
+                #print('0 detected')
+                self.detected_tag_0 = True
+                x0 = pixel_point.point.x
+                y0 = pixel_point.point.y
+            if id_ == [1]:
+                #print('1 detected')
+                self.detected_tag_1 = True
+                x1 = pixel_point.point.x
+                y1 = pixel_point.point.y
 
             rotation_matrix, _ = cv2.Rodrigues(rvec)  
             quaternion = tf_trans.quaternion_from_matrix(
@@ -169,7 +196,7 @@ class ARTagDetector:
             #camera_link_z /= 1000
 
             camera_x, camera_y, camera_z = tvec
-
+            '''
             # Convert the (X, Y, Z) coordinates from camera frame to odom frame
             try:
                 self.tf_listener.waitForTransform("/odom", "/camera_link", rospy.Time(), rospy.Duration(10.0))
@@ -184,11 +211,12 @@ class ARTagDetector:
                     print("Publishing goal point: ", X_odom, Y_odom, Z_odom)
                     # Publish the transformed point
                     self.point_pub.publish(PointStamped(header = Header(stamp=rospy.Time(), frame_id=str(id_)), point = Point(X_odom, Y_odom, Z_odom)))
-
+            
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
                 #print("TF Error: " + str(e))
                 print("TF Error: " + e)
                 return
+            '''
 
 if __name__ == '__main__':
     ARTagDetector()

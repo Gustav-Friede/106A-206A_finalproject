@@ -196,7 +196,7 @@ def plan_curved_trajectory(algo_waypoints):
         #transformed_waypoints.append((x2, y2, orientation))
         #next position
         transformed_waypoints.append((x2, y2, prev_orientation))
-
+    print('transformed waypoints', transformed_waypoints)
     #add ARTag (goal pos)
     #x2 = final_position[0] * np.cos(yaw) - final_position[1] * np.sin(yaw) + x1 
     #y2 = final_position[0] * np.sin(yaw) + final_position[1] * np.cos(yaw) + y1
