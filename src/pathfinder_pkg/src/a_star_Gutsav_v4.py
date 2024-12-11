@@ -277,4 +277,3 @@ def plot(occupancy_grid_msg, start, end):
     plt.axis('equal')
     
     plt.show()
-    
