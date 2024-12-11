@@ -107,6 +107,10 @@ class BirdsEyeViewNode:
         self.output_size = (700, 700)  # width, height
 
         self.bridge = CvBridge()
+
+        self.raw_image_pub = rospy.Publisher('raw_birds_eye_image', Image, queue_size=10)
+        self.hue_image_pub = rospy.Publisher('hue_image', Image, queue_size=10)
+
         self.image_sub = rospy.Subscriber(self.image_topic, Image, self.image_callback)
         self.latest_image = None
         self.image_count = 0
@@ -124,6 +128,10 @@ class BirdsEyeViewNode:
         hue, saturation, value = cv.split(cv.cvtColor(latest_image, cv.COLOR_BGR2HSV))
 
         cv.imshow("Bird's-Eye View", value)
+
+        self.raw_image_pub.publish(self.bridge.cv2_to_imgmsg(latest_image, encoding="bgr8"))
+        self.hue_image_pub.publish(self.bridge.cv2_to_imgmsg(hue, encoding="mono8"))
+
         key = cv.waitKey(1) & 0xFF
         if key == ord('S'):
             if latest_image is not None:
