@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import math
 import numpy as np
 import heapq
@@ -11,12 +12,12 @@ class Node:
     def __init__(self, x, y, cell_type=100):
         self.x = x
         self.y = y
-        self.cell_type = cell_type
+        self.type = cell_type
 
 # convert OccupancyGrid message into a 2D (grid) of node objects
 def process_grid(occupancy_grid_msg):
-    width = occupancy_grid_msg.width
-    height = occupancy_grid_msg.height
+    width = occupancy_grid_msg.info.width
+    height = occupancy_grid_msg.info.height
 
     occupancy_grid = np.array(occupancy_grid_msg.data).reshape((height, width))
     grid = []
