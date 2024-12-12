@@ -8,10 +8,10 @@ from vtk.util.colors import beige
 DIRECTIONS = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
 class Node:
-    def __init__(self, x, y, cell_type=100):
+    def __init__(self, x, y, type=100):
         self.x = x
         self.y = y
-        self.cell_type = cell_type
+        self.type = type
 
 # convert OccupancyGrid message into a 2D (grid) of node objects
 def process_grid(occupancy_grid_msg):
@@ -40,6 +40,8 @@ def add_obstacle_buffer(grid, buffer_size, start_node, end_node):
 
     for y in range(rows):
         for x in range(cols):
+            print(f'Adding buffer zone: {(count / (len(grid) * len(grid[0]))) * 100:.2f} %', end='\r')
+            count += 1
             if grid[y][x].type > 50:
                 for dy in range(-buffer_size, buffer_size + 1):
                     for dx in range(-buffer_size, buffer_size + 1):
@@ -107,7 +109,7 @@ def a_star(occupancy_grid_msg, start_coords, end_coords, buffer_zone=25):
                 neighbor_node = grid[neighbor_y][neighbor_x]
 
                 # continue if obstacle is encountered
-                if neighbor_node.cell_type > 50:
+                if neighbor_node.type > 50:
                     continue
 
                 cost_g_score = g_scores[neighbor_y, neighbor_x] + 1.0
