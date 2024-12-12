@@ -9,10 +9,10 @@ from vtk.util.colors import beige
 DIRECTIONS = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
 class Node:
-    def __init__(self, x, y, cell_type=100):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.type = cell_type
+        self.type = 100
 
 # convert OccupancyGrid message into a 2D (grid) of node objects
 def process_grid(occupancy_grid_msg):
@@ -26,8 +26,8 @@ def process_grid(occupancy_grid_msg):
     for row_idx in range(height):
         row_nodes = []
         for col_idx in range(width):
-            cell_type = occupancy_grid[row_idx, col_idx]
-            node = Node(row_idx, col_idx, cell_type)
+           # cell_type = occupancy_grid[row_idx, col_idx]
+            node = Node(row_idx, col_idx)
             row_nodes.append(node)
         grid.append(row_nodes)
     # returns a 2D list of node objects
@@ -41,6 +41,7 @@ def add_obstacle_buffer(grid, buffer_size, start_node, end_node):
 
     for y in range(rows):
         for x in range(cols):
+            count += 1
             if grid[y][x].type > 50:
                 for dy in range(-buffer_size, buffer_size + 1):
                     for dx in range(-buffer_size, buffer_size + 1):
