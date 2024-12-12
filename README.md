@@ -1,11 +1,12 @@
 # launch calibration
     roslaunch computer_vision snap_photos.launch
+# Shift - S to save snapshot, Shift - Q to Quit, Ctrl - C to kill
 
-# launch normal birds eye camera feed
-    rosrun computer_vision birds_eye_view.py
-    rosrun usb_cam usb_cam_node _video_device:=/dev/video0 _camera_name:=usb_cam
+# launch birds eye view, ar tag detector, oc-grid, pathfinder and transformation
+    roslaunch pathfinder_pkg launch_pathfinder.launch
 
-# launch hsv camera feed
-    rosrun computer_vision hsv_camera_feed.py
-    rosrun usb_cam usb_cam_node _video_device:=/dev/video0 _camera_name:=usb_cam
+# ssh into robot and run bringup
+    roslaunch turtlebot3_bringup turtlebot3_robot.launch --screen
 
+# run controller
+    rosrun path_planning turtlebot_controller.py
