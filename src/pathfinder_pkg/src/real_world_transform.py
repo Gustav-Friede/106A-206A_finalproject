@@ -13,10 +13,10 @@ def transform_pose(pose_in):
     # Define transformation parameters
     # Scaling factors
     s_x, s_y = 350, 350  # Input system scale
-    s_x2, s_y2 = 1.6, 1.575  # Target system scale
+    s_x2, s_y2 = 1.524, 1.524  # Target system scale
 
     # Translation (shifting the origin)
-    T_x, T_y = -1, -0.14#(1.5/350)  # Translation of origin in the target system
+    T_x, T_y = -0.86, -0.14#(1.5/350)  # Translation of origin in the target system
 
     # Rotation angles (in degrees)
     theta = 0  # Rotation around x, y, z axes

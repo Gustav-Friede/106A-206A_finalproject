@@ -8,6 +8,7 @@ import numpy as np
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import a_star_Gutsav_v4 as a_star
+#import solve_maze as maze
 #print(a_star.__file__)
 #print(dir(a_star))
 
@@ -142,6 +143,7 @@ class TrajectoryPlanner:
         # TODO: Replace with actual algorithm to generate the path
         #a_star.plot(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         way_points = a_star.a_star(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
+        #way_points = maze.a_star(map_msg,np.array([int(end_pose.point.x),int(end_pose.point.y)]),np.array([int(goal_pose.point.x),int(goal_pose.point.y)]))
         #print(way_points)
         if way_points is None:
     	    return path

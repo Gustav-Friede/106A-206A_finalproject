@@ -133,7 +133,7 @@ def add_buffer(grid, buffer, start, end):
     count = 0
     for i in range(rows):
         for j in range(columns):
-       ``     print(f'Adding buffer zone: {(count / (len(grid) * len(grid[0])))*100:.2f} %', end = '\r')     ``
+            print(f'Adding buffer zone: {(count / (len(grid) * len(grid[0])))*100:.2f} %', end = '\r')
             count = count + 1
             if grid[i][j].type > 51:    #if it's an obstacle
                 for di in range(-buffer, buffer + 1):
