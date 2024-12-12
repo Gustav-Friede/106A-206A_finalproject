@@ -108,7 +108,7 @@ def a_star(occupancy_grid_msg, start_coords, end_coords, buffer_zone=25):
                 neighbor_node = grid[neighbor_y][neighbor_x]
 
                 # continue if obstacle is encountered
-                if neighbor_node.cell_type > 50:
+                if neighbor_node.type > 50:
                     continue
 
                 cost_g_score = g_scores[neighbor_y, neighbor_x] + 1.0
