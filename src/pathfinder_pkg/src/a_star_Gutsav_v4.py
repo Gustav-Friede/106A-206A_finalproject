@@ -282,8 +282,8 @@ def plot(occupancy_grid_msg, start, end):
                 poc1_x.append(grid[i][j].x)
                 poc1_y.append(grid[i][j].y)
                 
-    plt.plot(oc1_x, oc1_y, 's', color='black', markersize=1.7)
-    plt.plot(poc1_x, poc1_y, 's', color='grey', markersize=1.7)
+    plt.plot(oc1_x, oc1_y, 's', color='black', markersize=0.05)
+    plt.plot(poc1_x, poc1_y, 's', color='grey', markersize=0.05)
 
     plt.axis('equal')
     
@@ -309,9 +309,9 @@ def plot(occupancy_grid_msg, start, end):
                 poc1_x.append(grid[i][j].x)
                 poc1_y.append(grid[i][j].y)
                 
-    plt.plot(path1_x, path1_y, color='red', linewidth=0.5, marker='o', markersize=0.01)
-    plt.plot(oc1_x, oc1_y, 's', color='black', markersize=1.7)
-    plt.plot(poc1_x, poc1_y, 's', color='grey', markersize=1.7)
+    plt.plot(path1_x, path1_y, color='red', linewidth=1, marker='o', markersize=0.01)
+    plt.plot(oc1_x, oc1_y, 's', color='black', markersize=0.05)
+    plt.plot(poc1_x, poc1_y, 's', color='grey', markersize=0.05)
 
     plt.axis('equal')
     
