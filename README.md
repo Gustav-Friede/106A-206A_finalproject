@@ -11,6 +11,7 @@
 ###### - a_star_Gutsav_v4.py
 ###### - real_world_transform.py
 ###### - turtlebot_controller.py
+###### - launch_pathfinder.launch
 ###### - trajectory.py (from path_planning)
 #
 ### Launches and runs:
