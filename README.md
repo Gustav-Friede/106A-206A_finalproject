@@ -12,8 +12,6 @@
 ###### - real_world_transform.py
 ###### - turtlebot_controller.py
 ###### - trajectory.py (from path_planning)
-###### -snap_photos.py
-###### -snap_photos.py
 #
 ### Launches and runs:
 ##### launch calibration
