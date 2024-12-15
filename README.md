@@ -10,8 +10,8 @@
 ###### - trajectory.py (from pathfinder_pkg)
 ###### - a_star_Gutsav_v4.py
 ###### - real_world_transform.py
-###### - turtlebot_controller.py
 ###### - launch_pathfinder.launch
+###### - turtlebot_controller.py
 ###### - trajectory.py (from path_planning)
 #
 ### Launches and runs:
